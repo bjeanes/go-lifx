@@ -31,10 +31,6 @@ func TestDecodeMessage(t *T) {
     t.Error("atTime field incorrect")
   }
 
-  if msg.msgType != 103 {
-    t.Error("type field incorrect")
-  }
-
   if msg.version != 1024 {
     t.Error("protocol version field incorrect")
   }
