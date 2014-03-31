@@ -1,33 +1,18 @@
 package main
 
 import (
-  "./protocol"
+  "github.com/bjeanes/go-lifx/protocol"
   "fmt"
-  "net"
-  "io"
 )
 
-const gatewayPort = 56700
-
 func main() {
-  reader, writer := io.Pipe()
+  conn, err := protocol.Connect()
 
-  go func() {
-    socket, err := net.DialUDP("udp4", nil, &net.UDPAddr{
-      IP:   net.IPv4(255, 255, 255, 255),
-      Port: gatewayPort,
-    })
-    if err != nil {
-      panic("Failed to broadcast")
-    }
-    defer socket.Close()
+  if err != nil { panic(err.Error()) }
 
-    io.CopyN(writer, socket, 128)
-  }()
-
-  msgs := protocol.NewMessageDecoder(reader)
+  msgs := protocol.NewMessageDecoder(conn.Datagrams)
 
   for msg := range(msgs) {
-    fmt.Printf("%#v\n", msg)
+    fmt.Printf("%v\n", &msg)
   }
 }

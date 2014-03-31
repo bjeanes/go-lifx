@@ -2,7 +2,6 @@ package protocol
 
 import (
   . "testing"
-  "bytes"
 )
 
 func TestDecodeMessage(t *T) {
@@ -14,9 +13,11 @@ func TestDecodeMessage(t *T) {
       0x00, 0x00, 0x00, 0x00, 0x80, 0x3f, 0x00, 0x00, 0x00,
   }
 
-  msgs := NewMessageDecoder(bytes.NewReader(b))
+  msg, err := Decode(b)
 
-  msg := <-msgs
+  if err != nil {
+    t.Error("Decode failed with err: " + err.Error())
+  }
 
   if msg.size != 57 {
     t.Error("size field incorrect")
