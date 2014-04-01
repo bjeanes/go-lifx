@@ -1,28 +1,30 @@
 package main
 
 import (
-  "github.com/bjeanes/go-lifx/protocol"
-  "fmt"
+	"fmt"
+	"github.com/bjeanes/go-lifx/protocol"
 )
 
 func main() {
-  conn, err := protocol.Connect()
+	conn, err := protocol.Connect()
 
-  if err != nil { panic(err.Error()) }
+	if err != nil {
+		panic(err.Error())
+	}
 
-  msgs, errs := protocol.NewMessageDecoder(conn.Datagrams)
+	msgs, errs := protocol.NewMessageDecoder(conn.Datagrams)
 
-  for {
-    select {
-    case msg := <-msgs:
-      fmt.Printf("%v\n", &msg)
-    case err := <-errs:
-      switch e := err.(type) {
-      case protocol.BadDatagram:
-        fmt.Printf("Error (%s) decoding datagram: %+v", e.Error(), e.Datagram)
-      default:
-        // ignore
-      }
-    }
-  }
+	for {
+		select {
+		case msg := <-msgs:
+			fmt.Printf("%v\n", &msg)
+		case err := <-errs:
+			switch e := err.(type) {
+			case protocol.BadDatagram:
+				fmt.Printf("Error (%s) decoding datagram: %+v", e.Error(), e.Datagram)
+			default:
+				// ignore
+			}
+		}
+	}
 }
