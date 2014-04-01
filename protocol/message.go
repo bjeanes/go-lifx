@@ -4,6 +4,7 @@ import (
   "encoding/binary"
   "fmt"
   "bytes"
+  "errors"
 )
 
 type (
@@ -91,15 +92,36 @@ func Decode(b []byte) (message, error) {
   return msg, nil
 }
 
-func NewMessageDecoder(datagrams <-chan datagram) <-chan message {
+type BadDatagram struct {
+  Datagram datagram
+  err error
+}
+
+func (err BadDatagram) Error() string {
+  return err.err.Error()
+}
+
+type errChan chan error
+
+func (ch errChan) send(err error) {
+  select {
+  case ch <- err:
+    // Error sent
+  default:
+    // Drop error if the channel is blocked.
+  }
+}
+
+func NewMessageDecoder(datagrams <-chan datagram) (<-chan message, errChan) {
   msgs := make(chan message, 1)
+  errs := make(errChan, 1)
 
   go func() {
     for datagram := range datagrams {
       msg, err := Decode(datagram.Data)
 
       if err != nil {
-        debug("Error (%s) decoding datagram: %+v", err.Error(), datagram)
+        errs.send(&BadDatagram{datagram, err})
         continue
       }
 
@@ -109,7 +131,7 @@ func NewMessageDecoder(datagrams <-chan datagram) <-chan message {
     close(msgs)
   }()
 
-  return msgs
+  return msgs, errs
 }
 
 func debug(str string, vals ...interface{}) {

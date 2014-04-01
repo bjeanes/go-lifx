@@ -10,9 +10,19 @@ func main() {
 
   if err != nil { panic(err.Error()) }
 
-  msgs := protocol.NewMessageDecoder(conn.Datagrams)
+  msgs, errs := protocol.NewMessageDecoder(conn.Datagrams)
 
-  for msg := range(msgs) {
-    fmt.Printf("%v\n", &msg)
+  for {
+    select {
+    case msg := <-msgs:
+      fmt.Printf("%v\n", &msg)
+    case err := <-errs:
+      switch e := err.(type) {
+      case protocol.BadDatagram:
+        fmt.Printf("Error (%s) decoding datagram: %+v", e.Error(), e.Datagram)
+      default:
+        // ignore
+      }
+    }
   }
 }
