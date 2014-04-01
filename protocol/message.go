@@ -52,11 +52,17 @@ type (
 
 
 func (msg message) String() string {
+  t := "<unknown>"
+  if msg.payload != nil {
+    t = fmt.Sprintf("%T", msg.payload)
+  }
+
   return fmt.Sprintf(
-    "LIFXMessage{version: %d, type: %T, tagged: %v}",
+    "LIFXMessage{version: %d, tagged: %v, type: %s, payload: %+v}",
     msg.version,
-    msg.payload,
     msg.tagged,
+    t,
+    msg.payload,
   )
 }
 
