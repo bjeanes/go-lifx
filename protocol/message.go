@@ -65,6 +65,13 @@ func Decode(b []byte) (message, error) {
   msgHeader := rawMessageHeader{}
   err := binary.Read(reader, binary.LittleEndian, &msgHeader)
 
+  payload := initPayload(msgHeader.Type)
+  if payload != nil {
+    binary.Read(reader, binary.LittleEndian, payload)
+  } else {
+    payload = &struct{rawBytes []byte}{b}
+  }
+
   if err != nil {
     return message{}, err
   }
@@ -78,6 +85,7 @@ func Decode(b []byte) (message, error) {
     site        : msgHeader.Site,
     acknowledge : 0x1 & uint16(msgHeader.Bitfield2) > 0, // top bit
     atTime      : msgHeader.AtTime,
+    payload     : payload,
   }
 
   return msg, nil
@@ -87,17 +95,18 @@ func NewMessageDecoder(datagrams <-chan datagram) <-chan message {
   msgs := make(chan message, 1)
 
   go func() {
-    for {
-      datagram := <-datagrams
+    for datagram := range datagrams {
       msg, err := Decode(datagram.Data)
 
       if err != nil {
-        close(msgs)
-        return
+        debug("Error (%s) decoding datagram: %+v", err.Error(), datagram)
+        continue
       }
 
       msgs <- msg
     }
+
+    close(msgs)
   }()
 
   return msgs

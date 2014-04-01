@@ -1,7 +1,21 @@
 package protocol
 
-type (
+func initPayload(id uint16) (payload) {
+  switch id {
+  case 2:
+    return &plDeviceGetPanGateway{}
+  case 3:
+    return &plDeviceStatePanGateway{}
+  case 107:
+    return &plLightState{}
+  }
 
+  debug("err: Unknown message payload of type %d\n", id)
+  return nil
+}
+
+// payloads
+type (
   // Payload name                         ID
   plDeviceSetSite struct{              // 1
     site [6]byte
