@@ -3,6 +3,7 @@ package protocol
 import (
 	"io"
 	"net"
+	"runtime"
 )
 
 var (
@@ -18,6 +19,7 @@ const (
 
 type Connection struct {
 	Datagrams chan datagram
+	connected bool
 	sockets   struct {
 		read, write *net.UDPConn
 	}
@@ -28,13 +30,24 @@ type datagram struct {
 	Data []byte
 }
 
+func (conn Connection) IsConnected() bool {
+	return conn.connected
+}
+
 func (conn Connection) Close() (err error) {
+	if !conn.IsConnected() {
+		return
+	}
+
 	err = conn.sockets.read.Close()
 	if err != nil {
 		return
 	}
-
 	err = conn.sockets.write.Close()
+	if err != nil {
+		return
+	}
+	conn.connected = false
 	return
 }
 
@@ -74,10 +87,13 @@ func (conn *Connection) setupSockets() (err error) {
 	return
 }
 
-func Connect() (conn Connection, err error) {
-	conn.Datagrams = make(chan datagram)
+func Connect() (*Connection, error) {
+	conn := &Connection{
+		Datagrams: make(chan datagram),
+	}
 
-	if err := conn.setupSockets(); err == nil {
+	err := conn.setupSockets()
+	if err == nil {
 		go func() {
 			b := make([]byte, defaultReadSize)
 
@@ -86,7 +102,7 @@ func Connect() (conn Connection, err error) {
 
 				if err != nil {
 					close(conn.Datagrams)
-					return
+					break
 				}
 
 				conn.Datagrams <- datagram{addr, b[0:n]}
@@ -94,5 +110,9 @@ func Connect() (conn Connection, err error) {
 		}()
 	}
 
-	return
+	runtime.SetFinalizer(conn, func(c *Connection) {
+		c.Close()
+	})
+
+	return conn, err
 }
