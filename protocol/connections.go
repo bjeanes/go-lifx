@@ -16,7 +16,7 @@ const (
 	defaultReadSize = 128
 )
 
-type connection struct {
+type Connection struct {
 	Datagrams chan datagram
 	sockets   struct {
 		read, write *net.UDPConn
@@ -28,7 +28,7 @@ type datagram struct {
 	Data []byte
 }
 
-func (conn connection) Close() (err error) {
+func (conn Connection) Close() (err error) {
 	err = conn.sockets.read.Close()
 	if err != nil {
 		return
@@ -38,7 +38,7 @@ func (conn connection) Close() (err error) {
 	return
 }
 
-func (conn connection) writeTo(writer io.WriteCloser) {
+func (conn Connection) writeTo(writer io.WriteCloser) {
 	go func() {
 		for {
 			_, err := io.CopyN(writer, conn.sockets.read, 128)
@@ -51,7 +51,7 @@ func (conn connection) writeTo(writer io.WriteCloser) {
 	}()
 }
 
-func (conn *connection) setupSockets() (err error) {
+func (conn *Connection) setupSockets() (err error) {
 	write, err := net.DialUDP("udp4", nil, &net.UDPAddr{
 		IP:   broadcastIP,
 		Port: broadcastPort,
@@ -74,7 +74,7 @@ func (conn *connection) setupSockets() (err error) {
 	return
 }
 
-func Connect() (conn connection, err error) {
+func Connect() (conn Connection, err error) {
 	conn.Datagrams = make(chan datagram)
 
 	if err := conn.setupSockets(); err == nil {
