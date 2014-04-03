@@ -78,7 +78,10 @@ func Decode(b []byte) (message, error) {
 	if payload != nil {
 		binary.Read(reader, binary.LittleEndian, payload)
 	} else {
-		payload = &struct{ rawBytes []byte }{b}
+		payload = &struct {
+			UnrecognizedMessage uint16
+			rawBytes            []byte
+		}{msgHeader.Type, b}
 	}
 
 	if err != nil {
