@@ -7,34 +7,6 @@ import (
 	"fmt"
 )
 
-type (
-	bitfield uint16
-
-	rawMessageHeader struct {
-		Size uint16
-
-		// 12 bits = protocol version
-		// 1 bit   = addressable bool
-		// 1 bit   = tagged bool
-		// 2 bit   = <reserved>
-		Bitfield1 bitfield
-
-		_ uint32 // <reserved>
-
-		Target [8]byte
-		Site   [6]byte
-
-		// 1 bit = acknowledge bool
-		// 15 bits = <reserved>
-		Bitfield2 bitfield
-
-		AtTime uint64
-		Type   uint16
-
-		_ uint16 // <reserved>
-	}
-
-	payload interface{}
 
 	message struct {
 		size        uint16
@@ -67,7 +39,7 @@ func (msg message) String() string {
 
 func Decode(b []byte) (message, error) {
 	reader := bytes.NewReader(b)
-	msgHeader := rawMessageHeader{}
+	msgHeader := header{}
 	err := binary.Read(reader, binary.LittleEndian, &msgHeader)
 
 	if msgHeader.Size != uint16(len(b)) {

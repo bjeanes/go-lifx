@@ -1,12 +1,40 @@
 package protocol
 
+type (
+	bitfield uint16
 
-type lightHsbk struct {
-	Hue        uint16 // 0-65535 scaled to 0-360°
-	Saturation uint16 // 0-65535 scaled to 0-100%
-	Brightness uint16 // 0-65535 scaled to 0-100%
-	Kelvin     uint16 // absolute 2400-10000
-}
+	header struct {
+		Size uint16
+
+		// 12 bits = protocol version
+		// 1 bit   = addressable bool
+		// 1 bit   = tagged bool
+		// 2 bit   = <reserved>
+		Bitfield1 bitfield
+
+		_      uint32 // <reserved>
+		Target [8]byte
+		Site   [6]byte
+
+		// 1 bit = acknowledge bool
+		// 15 bits = <reserved>
+		Bitfield2 bitfield
+
+		AtTime uint64
+		Type   uint16
+
+		_ uint16 // <reserved>
+	}
+
+	payload interface{}
+
+	lightHsbk struct {
+		Hue        uint16 // 0-65535 scaled to 0-360°
+		Saturation uint16 // 0-65535 scaled to 0-100%
+		Brightness uint16 // 0-65535 scaled to 0-100%
+		Kelvin     uint16 // absolute 2400-10000
+	}
+)
 
 var payloads typeRegistry
 
