@@ -53,6 +53,10 @@ func Decode(b []byte) (message, error) {
 
 	payload := payloads.New(msgHeader.Type)
 	if payload != nil {
+		if reader.Len() != binary.Size(payload) {
+			return message{}, errors.New(fmt.Sprintf("Unexpected payload size for %T", payload))
+		}
+
 		binary.Read(reader, binary.LittleEndian, payload)
 	} else {
 		payload = &struct {
