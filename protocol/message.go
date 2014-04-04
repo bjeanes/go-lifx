@@ -44,6 +44,7 @@ func Decode(b []byte) (message, error) {
 	err := binary.Read(reader, binary.LittleEndian, &msgHeader)
 
 	if msgHeader.Size != uint16(len(b)) {
+		// TODO: figure out if this is actually a problem or just ignoreable padding/noise at the end of the datagram?
 		return message{}, errors.New(fmt.Sprintf("Incorrect message size (data: %d, header: %d)", len(b), msgHeader.Size))
 	}
 
