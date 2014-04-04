@@ -36,6 +36,10 @@ type (
 	}
 )
 
+func (h header) version() uint16 {
+	return 0xfff & uint16(h.Bitfield1) // top 12 bits
+}
+
 var payloads typeRegistry
 
 func init() {

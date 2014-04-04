@@ -7,6 +7,7 @@ import (
 	"fmt"
 )
 
+const compatibleVersion = 1024
 
 	message struct {
 		size        uint16
@@ -44,6 +45,10 @@ func Decode(b []byte) (message, error) {
 
 	if msgHeader.Size != uint16(len(b)) {
 		return message{}, errors.New(fmt.Sprintf("Incorrect message size (data: %d, header: %d)", len(b), msgHeader.Size))
+	}
+
+	if v := msgHeader.version(); v != compatibleVersion {
+		return message{}, errors.New(fmt.Sprintf("Unknown message version (%d)", v))
 	}
 
 	payload := payloads.New(msgHeader.Type)
