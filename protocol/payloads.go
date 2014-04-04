@@ -1,158 +1,184 @@
 package protocol
 
-func initPayload(id uint16) payload {
-	switch id {
-	case 2:
-		return &plDeviceGetPanGateway{}
-	case 3:
-		return &plDeviceStatePanGateway{}
-	case 107:
-		return &plLightState{}
-	}
 
-	debug("err: Unknown message payload of type %d\n", id)
-	return nil
+type lightHsbk struct {
+	Hue        uint16 // 0-65535 scaled to 0-360°
+	Saturation uint16 // 0-65535 scaled to 0-100%
+	Brightness uint16 // 0-65535 scaled to 0-100%
+	Kelvin     uint16 // absolute 2400-10000
 }
 
-// payloads
-type (
-	// Payload name                         ID
-	plDeviceSetSite struct { // 1
+var payloads typeRegistry
+
+func init() {
+	payloads = NewTypeRegistry()
+
+	type deviceSetSite struct {
 		Site [6]byte
 	}
+	payloads.Register(1, (*deviceSetSite)(nil))
 
-	plDeviceGetPanGateway struct{} // 2
+	type deviceGetPanGateway struct{}
+	payloads.Register(2, (*deviceGetPanGateway)(nil))
 
-	plDeviceStatePanGateway struct { // 3
+	type deviceStatePanGateway struct {
 		Service uint8
 		Port    uint32
 	}
+	payloads.Register(3, (*deviceStatePanGateway)(nil))
 
-	plDevicetTime struct{} // 4
+	type deviceTime struct{}
+	payloads.Register(4, (*deviceTime)(nil))
 
-	plDeviceSetTime struct { // 5
+	type deviceSetTime struct {
 		Time uint64 // nanos since epoch
 	}
+	payloads.Register(5, (*deviceSetTime)(nil))
 
-	plDeviceStateTime struct { // 6
+	type deviceStateTime struct {
 		Time uint64 // nanos since epoch
 	}
+	payloads.Register(6, (*deviceStateTime)(nil))
 
-	plDeviceGetResetSwitch struct{} // 7
+	type deviceGetResetSwitch struct{}
+	payloads.Register(7, (*deviceGetResetSwitch)(nil))
 
-	plDeviceStateResetSwitch struct { // 8
+	type deviceStateResetSwitch struct {
 		Position uint8
 	}
+	payloads.Register(8, (*deviceStateResetSwitch)(nil))
 
-	plDeviceGetMeshInfo struct{} // 12
+	type deviceGetMeshInfo struct{}
+	payloads.Register(12, (*deviceGetMeshInfo)(nil))
 
-	plDeviceStateMeshInfo struct { // 13
+	type deviceStateMeshInfo struct {
 		Signal         float32 // milliwatts
 		Tx, Rx         uint32  // bytes
 		McuTemperature int16   // deci-celsius
 	}
+	payloads.Register(13, (*deviceStateMeshInfo)(nil))
 
-	plDeviceGetMeshFirmware struct{} // 14
+	type deviceGetMeshFirmware struct{}
+	payloads.Register(14, (*deviceGetMeshFirmware)(nil))
 
-	plDeviceStateMeshFirmware struct { // 15
+	type deviceStateMeshFirmware struct {
 		Build, Install uint64
 		Version        uint32
 	}
+	payloads.Register(15, (*deviceStateMeshFirmware)(nil))
 
-	plDeviceGetWifiInfo struct{} // 16
+	type deviceGetWifiInfo struct{}
+	payloads.Register(16, (*deviceGetWifiInfo)(nil))
 
-	plDeviceStateWifiInfo struct { // 17
+	type deviceStateWifiInfo struct {
 		Signal         float32 // milliwatts
 		Tx, Rx         uint32  // bytes
 		McuTemperature int16   // deci-celsius
 	}
+	payloads.Register(17, (*deviceStateWifiInfo)(nil))
 
-	plDeviceGetWifiFirmware struct{} // 18
+	type deviceGetWifiFirmware struct{}
+	payloads.Register(18, (*deviceGetWifiFirmware)(nil))
 
-	plDeviceStateWifiFirmware struct { // 19
+	type deviceStateWifiFirmware struct {
 		Build, Install uint64
 		Version        uint32
 	}
-	plDeviceGetPower struct{} // 20
+	payloads.Register(19, (*deviceStateWifiFirmware)(nil))
+	type deviceGetPower struct{}
+	payloads.Register(20, (*deviceGetPower)(nil))
 
-	plDeviceSetPower struct { // 21
+	type deviceSetPower struct {
 		Level uint16 // 0 = off; 1+ = on
 	}
+	payloads.Register(21, (*deviceSetPower)(nil))
 
-	plDeviceStatePower struct { // 22
+	type deviceStatePower struct {
 		Level uint16 // 0 = off; 1+ = on
 	}
+	payloads.Register(22, (*deviceStatePower)(nil))
 
-	plDeviceGetLabel struct{} // 23
+	type deviceGetLabel struct{}
+	payloads.Register(23, (*deviceGetLabel)(nil))
 
-	plDeviceSetLabel struct { // 24
+	type deviceSetLabel struct {
 		Label [32]byte // string
 	}
+	payloads.Register(24, (*deviceSetLabel)(nil))
 
-	plDeviceStateLabel struct { // 25
+	type deviceStateLabel struct {
 		Label [32]byte // string
 	}
+	payloads.Register(25, (*deviceStateLabel)(nil))
 
-	plDeviceGetTags struct{} // 26
+	type deviceGetTags struct{}
+	payloads.Register(26, (*deviceGetTags)(nil))
 
-	plDeviceSetTags struct { // 27
+	type deviceSetTags struct {
 		Tags uint64
 	}
+	payloads.Register(27, (*deviceSetTags)(nil))
 
-	plDeviceStateTags struct { // 28
+	type deviceStateTags struct {
 		Tags uint64
 	}
+	payloads.Register(28, (*deviceStateTags)(nil))
 
-	plDeviceGetTagLabels struct { // 29
+	type deviceGetTagLabels struct {
 		Tags uint64
 	}
+	payloads.Register(29, (*deviceGetTagLabels)(nil))
 
-	plDeviceSetTagLabels struct { // 30
+	type deviceSetTagLabels struct {
 		Tags  uint64
 		Label [32]byte
 	}
+	payloads.Register(30, (*deviceSetTagLabels)(nil))
 
-	plDeviceStateTagLabels struct { // 31
+	type deviceStateTagLabels struct {
 		Tags  uint64
 		Label [32]byte
 	}
+	payloads.Register(31, (*deviceStateTagLabels)(nil))
 
-	plDeviceGetVersion struct{} // 32
+	type deviceGetVersion struct{}
+	payloads.Register(32, (*deviceGetVersion)(nil))
 
-	plDeviceStateVersion struct { // 33
+	type deviceStateVersion struct {
 		Vendor, Product, Version uint32
 	}
+	payloads.Register(33, (*deviceStateVersion)(nil))
 
-	plDeviceGetInfo struct{} // 34
+	type deviceGetInfo struct{}
+	payloads.Register(34, (*deviceGetInfo)(nil))
 
-	plDeviceStateInfo struct { // 35
+	type deviceStateInfo struct {
 		Time, Uptime, Downtime uint64 // ns
 	}
+	payloads.Register(35, (*deviceStateInfo)(nil))
 
-	plDeviceGetMcuRailVoltage struct{} // 36
+	type deviceGetMcuRailVoltage struct{}
+	payloads.Register(36, (*deviceGetMcuRailVoltage)(nil))
 
-	plDeviceStateMcuRailVoltage struct { // 37
+	type deviceStateMcuRailVoltage struct {
 		Voltage uint32
 	}
+	payloads.Register(37, (*deviceStateMcuRailVoltage)(nil))
 
-	plDeviceReboot struct{} // 38
+	type deviceReboot struct{}
+	payloads.Register(38, (*deviceReboot)(nil))
 
-	lightHsbk struct { // not a top-level payload
-		Hue        uint16 // 0-65535 scaled to 0-360°
-		Saturation uint16 // 0-65535 scaled to 0-100%
-		Brightness uint16 // 0-65535 scaled to 0-100%
-		Kelvin     uint16 // absolute 2400-10000
-	}
+	type lightGet struct{}
+	payloads.Register(101, (*lightGet)(nil))
 
-	plLightGet struct{} // 101
-
-	plLightSet struct { // 102
+	type lightSet struct {
 		Stream   uint8
 		Color    lightHsbk
 		Duration uint32 // ms
 	}
+	payloads.Register(102, (*lightSet)(nil))
 
-	plLightSetWaveform struct { // 103
+	type lightSetWaveform struct {
 		Stream    uint8
 		Transient uint8 // 0 false; 1+ true
 		Color     lightHsbk
@@ -160,115 +186,139 @@ type (
 		DutyCycle int16
 		Waveform  uint8
 	}
+	payloads.Register(103, (*lightSetWaveform)(nil))
 
-	plLightSetDimAbsolute struct { // 104
+	type lightSetDimAbsolute struct {
 		Brightness int32  // 0 for no change
 		Duration   uint32 // ms
 	}
+	payloads.Register(104, (*lightSetDimAbsolute)(nil))
 
-	plLightSetDimRelative struct { // 105
+	type lightSetDimRelative struct {
 		Brightness int32  // 0 for no change
 		Duration   uint32 // ms
 	}
+	payloads.Register(105, (*lightSetDimRelative)(nil))
 
-	plLightSetRgbw struct { // 106
+	type lightSetRgbw struct {
 		Color struct {
 			Red, Green, Blue, White uint16
 		}
 	}
 
-	plLightState struct { // 107
+	type lightState struct {
 		Color lightHsbk
 		Dim   int16
 		Power uint16
 		Label [32]byte
 		Tags  uint64
 	}
+	payloads.Register(107, (*lightState)(nil))
 
-	plLightGetRailVoltage struct{} // 108
+	type lightGetRailVoltage struct{}
+	payloads.Register(108, (*lightGetRailVoltage)(nil))
 
-	plLightStateRailVoltage struct { // 109
+	type lightStateRailVoltage struct {
 		Voltage uint32
 	}
+	payloads.Register(109, (*lightStateRailVoltage)(nil))
 
-	plLightGetTemperature struct{} // 110
+	type lightGetTemperature struct{}
+	payloads.Register(110, (*lightGetTemperature)(nil))
 
-	plLightStateTemperature struct { // 111
+	type lightStateTemperature struct {
 		Temperature int16 // deci-celsius
 	}
+	payloads.Register(111, (*lightStateTemperature)(nil))
 
-	plWanConnectPlain struct { // 201
+	type wanConnectPlain struct {
 		User, Pass [32]byte
 	}
+	payloads.Register(201, (*wanConnectPlain)(nil))
 
-	plWanConnectKey struct { // 202
+	type wanConnectKey struct {
 		AuthKey [32]byte
 	}
+	payloads.Register(202, (*wanConnectKey)(nil))
 
-	plWanStateConnect struct { // 203
+	type wanStateConnect struct {
 		AuthKey [32]byte
 	}
+	payloads.Register(203, (*wanStateConnect)(nil))
 
-	plWanSub struct { // 204
+	type wanSub struct {
 		Target [8]byte
 		Site   [6]byte
 		Device uint8 // 0 device; 1 tag
 	}
+	payloads.Register(204, (*wanSub)(nil))
 
-	plWanUnsub struct { // 205
+	type wanUnsub struct {
 		Target [8]byte
 		Site   [6]byte
 		Device uint8 // 0 device; 1 tag
 	}
+	payloads.Register(205, (*wanUnsub)(nil))
 
-	plWanStateSub struct { // 206
+	type wanStateSub struct {
 		Target [8]byte
 		Site   [6]byte
 		Device uint8 // 0 device; 1 tag
 	}
+	payloads.Register(206, (*wanStateSub)(nil))
 
-	plWifiGet struct { // 301
+	type wifiGet struct {
 		Iface ifaceType
 	}
+	payloads.Register(301, (*wifiGet)(nil))
 
-	plWifiSet struct { // 302
+	type wifiSet struct {
 		Iface  ifaceType
 		Active uint8 // 0 false; 1 true
 	}
+	payloads.Register(302, (*wifiSet)(nil))
 
-	plWifiState struct { // 303
+	type wifiState struct {
 		Iface  ifaceType
 		Status wifiStatus
 		Ipv4   uint32
 		Ipv6   [16]byte
 	}
+	payloads.Register(303, (*wifiState)(nil))
 
-	plWifiGetAccessPoint struct{} // 304
+	type wifiGetAccessPoint struct{}
+	payloads.Register(304, (*wifiGetAccessPoint)(nil))
 
-	plWifiSetAccessPoint struct { // 305
+	type wifiSetAccessPoint struct {
 		Iface    ifaceType
 		Ssid     [32]byte
 		Password [64]byte
 		Security apSecurity
 	}
+	payloads.Register(305, (*wifiSetAccessPoint)(nil))
 
-	plWifiStateAccessPoint struct { // 306
+	type wifiStateAccessPoint struct {
 		Iface    ifaceType
 		Ssid     [32]byte
 		Password [64]byte
 		Security apSecurity
 		Channel  uint16
 	}
+	payloads.Register(306, (*wifiStateAccessPoint)(nil))
 
-	plSensorGetAmbientLight struct{} // 401
+	type sensorGetAmbientLight struct{}
+	payloads.Register(401, (*sensorGetAmbientLight)(nil))
 
-	plSensorStateAmbientLight struct { // 402
+	type sensorStateAmbientLight struct {
 		Lux float32
 	}
+	payloads.Register(402, (*sensorStateAmbientLight)(nil))
 
-	plSensorGetDimmerVoltage struct{} // 403
+	type sensorGetDimmerVoltage struct{}
+	payloads.Register(403, (*sensorGetDimmerVoltage)(nil))
 
-	plSensorStateDimmerVoltage struct { // 404
+	type sensorStateDimmerVoltage struct {
 		Voltage uint32
 	}
-)
+	payloads.Register(404, (*sensorStateDimmerVoltage)(nil))
+}

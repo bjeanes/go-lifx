@@ -74,7 +74,7 @@ func Decode(b []byte) (message, error) {
 		return message{}, errors.New(fmt.Sprintf("Incorrect message size (data: %d, header: %d)", len(b), msgHeader.Size))
 	}
 
-	payload := initPayload(msgHeader.Type)
+	payload := payloads.New(msgHeader.Type)
 	if payload != nil {
 		binary.Read(reader, binary.LittleEndian, payload)
 	} else {
