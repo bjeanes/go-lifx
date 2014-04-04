@@ -89,8 +89,8 @@ type BadDatagram struct {
 	err      error
 }
 
-func (err BadDatagram) Error() string {
-	return err.err.Error()
+func (e BadDatagram) Error() string {
+	return fmt.Sprintf("Error (%s) decoding datagram: %+v", e.err.Error(), e.Datagram)
 }
 
 type errChan chan error
