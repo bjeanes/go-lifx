@@ -5,37 +5,29 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
+	"strings"
 )
 
 const compatibleVersion = 1024
 
-	message struct {
-		size        uint16
-		version     uint16
-		addressable bool
-		tagged      bool
-		target      [8]byte
-		site        [6]byte
-		acknowledge bool
-		atTime      uint64
-
-		payload
-	}
-)
+type message struct {
+	target [8]byte
+	site   [6]byte
+	atTime uint64
+	payload
+}
 
 func (msg message) String() string {
 	t := "<unknown>"
 	if msg.payload != nil {
-		t = fmt.Sprintf("%T", msg.payload)
+		t = strings.Replace(fmt.Sprintf("%T", msg.payload), "*protocol.", "", 1)
 	}
 
-	return fmt.Sprintf(
-		"LIFXMessage{version: %d, tagged: %v, type: %s, payload: %+v}",
-		msg.version,
-		msg.tagged,
+	return strings.Replace(fmt.Sprintf(
+		"LIFXMessage(%s)%+v",
 		t,
 		msg.payload,
-	)
+	), "&{", "{", -1)
 }
 
 func Decode(b []byte) (message, error) {
@@ -71,15 +63,13 @@ func Decode(b []byte) (message, error) {
 	}
 
 	msg := message{
-		size:        msgHeader.Size,
-		version:     0xfff & uint16(msgHeader.Bitfield1),    // top 12 bits
-		addressable: 0x1000&uint16(msgHeader.Bitfield1) > 0, // next bit
-		tagged:      0x2000&uint16(msgHeader.Bitfield1) > 0, // next bit
-		target:      msgHeader.Target,
-		site:        msgHeader.Site,
-		acknowledge: 0x1&uint16(msgHeader.Bitfield2) > 0, // top bit
-		atTime:      msgHeader.AtTime,
-		payload:     payload,
+		atTime:  msgHeader.AtTime,
+		target:  msgHeader.Target,
+		site:    msgHeader.Site,
+		payload: payload,
+		// addressable: 0x1000&uint16(msgHeader.Bitfield1) > 0, // next bit
+		// tagged:      0x2000&uint16(msgHeader.Bitfield1) > 0, // next bit
+		// acknowledge: 0x1&uint16(msgHeader.Bitfield2) > 0, // top bit
 	}
 
 	return msg, nil
