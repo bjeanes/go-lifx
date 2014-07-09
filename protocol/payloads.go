@@ -54,8 +54,8 @@ func init() {
 	payloads.Register(2, (*deviceGetPanGateway)(nil))
 
 	type deviceStatePanGateway struct {
-		Service uint8
-		Port    uint32
+		Service uint8  // 1 for UDP; 2 for TCP
+		Port    uint32 // 0 for disabled, else it's the service port
 	}
 	payloads.Register(3, (*deviceStatePanGateway)(nil))
 
