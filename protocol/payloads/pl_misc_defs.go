@@ -151,14 +151,6 @@ type lightSetRgbw struct {
 	}
 }
 
-type lightState struct {
-	Color lightHsbk
-	Dim   int16
-	Power uint16
-	Label [32]byte
-	Tags  uint64
-}
-
 type lightGetRailVoltage struct{}
 
 type lightStateRailVoltage struct {
