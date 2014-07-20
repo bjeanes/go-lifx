@@ -16,24 +16,24 @@ func main() {
 	}
 
 	app.Flags = []cli.Flag{
-		cli.StringFlag{"tag, t", "*", "Limits action to bulbs with specified tag"},
-		cli.StringFlag{"label, l", "*", "Limits action to bulb with specified label"},
+		cli.StringFlag{"tag, t", "*", "Limit action to bulbs with specified tag"},
+		cli.StringFlag{"label, l", "*", "Limit action to bulb with specified label"},
 	}
 
 	app.Commands = []cli.Command{
 		cli.Command{
 			Name:   "list",
-			Usage:  "Lists all discovered bulbs",
+			Usage:  "List all discovered bulbs",
 			Action: func(_ *cli.Context) {},
 		},
 		cli.Command{
 			Name:   "on",
-			Usage:  "Turns light(s) on",
+			Usage:  "Turn light(s) on",
 			Action: func(_ *cli.Context) {},
 		},
 		cli.Command{
 			Name:   "off",
-			Usage:  "Turns light(s) off",
+			Usage:  "Turn light(s) off",
 			Action: func(_ *cli.Context) {},
 		},
 		cli.Command{
