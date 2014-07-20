@@ -239,6 +239,7 @@ func init() {
 			Red, Green, Blue, White uint16
 		}
 	}
+	payloads.Register(106, (*lightSetRgbw)(nil))
 
 	type lightState struct {
 		Color lightHsbk
