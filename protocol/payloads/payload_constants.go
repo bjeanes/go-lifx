@@ -1,4 +1,4 @@
-package protocol
+package payloads
 
 type (
 	apSecurity uint8

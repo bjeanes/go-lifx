@@ -5,16 +5,17 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
+	"github.com/bjeanes/go-lifx/protocol/payloads"
 	"strings"
 )
 
 const compatibleVersion = 1024
 
 type message struct {
-	target [8]byte
-	site   [6]byte
-	atTime uint64
-	payload
+	target  [8]byte
+	site    [6]byte
+	atTime  uint64
+	payload payloads.Payload
 }
 
 func (msg message) String() string {
@@ -44,7 +45,7 @@ func Decode(b []byte) (message, error) {
 		return message{}, errors.New(fmt.Sprintf("Unknown message version (%d)", v))
 	}
 
-	payload := payloads.New(msgHeader.Type)
+	payload := payloads.ForId(msgHeader.Type)
 	if payload != nil {
 		if reader.Len() != binary.Size(payload) {
 			return message{}, errors.New(fmt.Sprintf("Unexpected payload size for %T", payload))
@@ -52,10 +53,7 @@ func Decode(b []byte) (message, error) {
 
 		binary.Read(reader, binary.LittleEndian, payload)
 	} else {
-		payload = &struct {
-			UnrecognizedMessage uint16
-			rawBytes            []byte
-		}{msgHeader.Type, b}
+		return message{}, errors.New("Unknown message")
 	}
 
 	if err != nil {
