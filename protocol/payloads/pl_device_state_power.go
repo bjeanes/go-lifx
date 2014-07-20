@@ -4,4 +4,4 @@ type deviceStatePower struct {
 	Level uint16 // 0 = off; 1+ = on
 }
 
-func (deviceStatePower) Id() uint8 { return 21 }
+func (deviceStatePower) Id() uint16 { return 21 }

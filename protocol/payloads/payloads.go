@@ -66,7 +66,7 @@ const (
 )
 
 type Payload interface {
-	Id() uint8
+	Id() uint16
 }
 
 func ForId(id uint16) Payload {

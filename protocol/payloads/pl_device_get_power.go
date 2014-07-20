@@ -2,4 +2,4 @@ package payloads
 
 type deviceGetPower struct{}
 
-func (deviceGetPower) Id() uint8 { return 20 }
+func (deviceGetPower) Id() uint16 { return 20 }
