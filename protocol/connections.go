@@ -18,14 +18,14 @@ const (
 )
 
 type Connection struct {
-	Datagrams chan datagram
+	Datagrams chan Datagram
 	connected bool
 	sockets   struct {
 		read, write *net.UDPConn
 	}
 }
 
-type datagram struct {
+type Datagram struct {
 	From net.Addr
 	Data []byte
 }
@@ -89,7 +89,7 @@ func (conn *Connection) setupSockets() (err error) {
 
 func Connect() (*Connection, error) {
 	conn := &Connection{
-		Datagrams: make(chan datagram),
+		Datagrams: make(chan Datagram),
 	}
 
 	err := conn.setupSockets()
@@ -105,7 +105,7 @@ func Connect() (*Connection, error) {
 					break
 				}
 
-				conn.Datagrams <- datagram{addr, b[0:n]}
+				conn.Datagrams <- Datagram{addr, b[0:n]}
 			}
 		}()
 	}

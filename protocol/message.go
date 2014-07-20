@@ -55,7 +55,7 @@ func Decode(b []byte) (message, error) {
 			return message{}, err
 		}
 	} else {
-		return message{}, errors.New("Unknown message")
+		return message{}, fmt.Errorf("Unknown message (%d)", msgHeader.Type)
 	}
 
 	if err != nil {
@@ -76,12 +76,12 @@ func Decode(b []byte) (message, error) {
 }
 
 type BadDatagram struct {
-	Datagram datagram
+	Datagram Datagram
 	err      error
 }
 
 func (e BadDatagram) Error() string {
-	return fmt.Sprintf("Error (%s) decoding datagram: %+v", e.err.Error(), e.Datagram)
+	return fmt.Sprintf("Error (%s) decoding datagram", e.err.Error())
 }
 
 type errChan chan error
@@ -95,7 +95,7 @@ func (ch errChan) send(err error) {
 	}
 }
 
-func NewMessageDecoder(datagrams <-chan datagram) (<-chan message, errChan) {
+func NewMessageDecoder(datagrams <-chan Datagram) (<-chan message, errChan) {
 	msgs := make(chan message, 1)
 	errs := make(errChan, 1)
 

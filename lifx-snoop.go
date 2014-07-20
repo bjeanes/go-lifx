@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/bjeanes/go-lifx/protocol"
+	"github.com/fatih/color"
 )
 
 func main() {
@@ -12,14 +13,33 @@ func main() {
 		panic(err.Error())
 	}
 
-	msgs, errs := protocol.NewMessageDecoder(conn.Datagrams)
+	datagrams := make(chan protocol.Datagram)
+	bytes := make(chan []byte)
+
+	go func() {
+		for d := range conn.Datagrams {
+			datagrams <- d
+			bytes <- d.Data
+		}
+
+		close(datagrams)
+		close(bytes)
+	}()
+
+	msgs, errs := protocol.NewMessageDecoder(datagrams)
 
 	for {
+		b := <-bytes
 		select {
 		case msg := <-msgs:
-			fmt.Printf("%v\n", &msg)
+			out := color.New(color.FgGreen)
+			out.Printf("DATA: %v\n", b)
+			out.Add(color.Bold).Printf("MSG:  %v", &msg)
 		case err := <-errs:
-			fmt.Println(err.Error())
+			out := color.New(color.FgRed)
+			out.Printf("DATA: %v\n", b)
+			out.Add(color.Bold).Printf("ERR:  %s", err.Error())
 		}
+		fmt.Printf("\n\n")
 	}
 }
