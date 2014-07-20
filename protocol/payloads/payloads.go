@@ -72,11 +72,13 @@ type Payload interface {
 func ForId(id uint16) Payload {
 	switch id {
 	case DeviceGetPower:
-		return deviceGetPower{}
+		return new(deviceGetPower)
 	case DeviceSetPower:
-		return deviceSetPower{}
+		return new(deviceSetPower)
 	case DeviceStatePower:
-		return deviceStatePower{}
+		return new(deviceStatePower)
+	case LightState:
+		return new(lightState)
 	default:
 		return nil
 	}

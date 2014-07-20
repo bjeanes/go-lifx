@@ -21,7 +21,7 @@ type message struct {
 func (msg message) String() string {
 	t := "<unknown>"
 	if msg.payload != nil {
-		t = strings.Replace(fmt.Sprintf("%T", msg.payload), "*protocol.", "", 1)
+		t = strings.Replace(fmt.Sprintf("%T", msg.payload), "*payloads.", "", 1)
 	}
 
 	return strings.Replace(fmt.Sprintf(
