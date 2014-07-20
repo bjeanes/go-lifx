@@ -52,14 +52,21 @@ OPTIONS:
 
 ``` sh-session
 $ go run lifx-snoop.go
-LIFXMessage(lightState){Color:{Hue:0 Saturation:0 Brightness:28142 Kelvin:3700} Dim:0 Power:65535 Label:[240 159 147 136 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] Tags:1}
-LIFXMessage(lightState){Color:{Hue:0 Saturation:0 Brightness:65535 Kelvin:3700} Dim:0 Power:0 Label:[240 159 145 167 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] Tags:0}
-LIFXMessage(lightState){Color:{Hue:0 Saturation:0 Brightness:65535 Kelvin:3000} Dim:0 Power:0 Label:[240 159 145 166 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] Tags:0}
-LIFXMessage(lightState){Color:{Hue:0 Saturation:0 Brightness:28142 Kelvin:3700} Dim:0 Power:65535 Label:[240 159 147 154 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] Tags:1}
-LIFXMessage(lightState){Color:{Hue:0 Saturation:0 Brightness:28142 Kelvin:3700} Dim:0 Power:65535 Label:[240 159 142 163 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] Tags:1}
-LIFXMessage(lightState){Color:{Hue:0 Saturation:0 Brightness:28142 Kelvin:3200} Dim:0 Power:65535 Label:[240 159 148 173 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] Tags:1}
-LIFXMessage(deviceGetPanGateway){}
-LIFXMessage(deviceStatePanGateway){Service:2 Port:0}
-LIFXMessage(deviceStatePanGateway){Service:1 Port:56700}
-LIFXMessage(deviceStateTagLabels){Tags:1 Label:[72 111 109 101 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]}
+DATA: [88 0 0 84 0 0 0 0 208 115 213 0 20 205 0 0 76 73 70 88 86 50 0 0 0 0 0 0 0 0 0 0 107 0 0 0 0 0 0 0 238 109 116 14 0 0 255 255 240 159 147 136 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0]
+MSG:  LIFXMessage(lightState){Color:{Hue:0 Saturation:0 Brightness:28142 Kelvin:3700} Dim:0 Power:65535 Label:📈 Tags:1}
+
+DATA: [88 0 0 84 0 0 0 0 208 115 213 0 3 196 0 0 76 73 70 88 86 50 0 0 0 0 0 0 0 0 0 0 107 0 0 0 0 0 0 0 255 255 116 14 0 0 0 0 240 159 145 167 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+MSG:  LIFXMessage(lightState){Color:{Hue:0 Saturation:0 Brightness:65535 Kelvin:3700} Dim:0 Power:0 Label:👧 Tags:0}
+
+DATA: [88 0 0 84 0 0 0 0 208 115 213 0 243 38 0 0 76 73 70 88 86 50 0 0 0 0 0 0 0 0 0 0 107 0 0 0 0 0 0 0 238 109 116 14 0 0 255 255 240 159 142 163 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0]
+MSG:  LIFXMessage(lightState){Color:{Hue:0 Saturation:0 Brightness:28142 Kelvin:3700} Dim:0 Power:65535 Label:🎣 Tags:1}
+
+DATA: [88 0 0 84 0 0 0 0 208 115 213 0 13 118 0 0 76 73 70 88 86 50 0 0 0 0 0 0 0 0 0 0 107 0 0 0 0 0 0 0 255 255 184 11 0 0 0 0 240 159 145 166 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+MSG:  LIFXMessage(lightState){Color:{Hue:0 Saturation:0 Brightness:65535 Kelvin:3000} Dim:0 Power:0 Label:👦 Tags:0}
+
+DATA: [88 0 0 84 0 0 0 0 208 115 213 0 251 176 0 0 76 73 70 88 86 50 0 0 0 0 0 0 0 0 0 0 107 0 0 0 0 0 0 0 238 109 116 14 0 0 255 255 240 159 147 154 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0]
+MSG:  LIFXMessage(lightState){Color:{Hue:0 Saturation:0 Brightness:28142 Kelvin:3700} Dim:0 Power:65535 Label:📚 Tags:1}
+
+DATA: [88 0 0 84 0 0 0 0 208 115 213 0 12 175 0 0 76 73 70 88 86 50 0 0 0 0 0 0 0 0 0 0 107 0 0 0 0 0 0 0 238 109 128 12 0 0 255 255 240 159 148 173 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0]
+MSG:  LIFXMessage(lightState){Color:{Hue:0 Saturation:0 Brightness:28142 Kelvin:3200} Dim:0 Power:65535 Label:🔭 Tags:1}
 ```
