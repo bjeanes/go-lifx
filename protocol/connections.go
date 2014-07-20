@@ -47,6 +47,9 @@ func (conn Connection) Close() (err error) {
 	if err != nil {
 		return
 	}
+
+	close(conn.Datagrams)
+
 	conn.connected = false
 	return
 }
