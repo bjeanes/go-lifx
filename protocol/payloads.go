@@ -1,5 +1,7 @@
 package protocol
 
+import type_registry "github.com/bjeanes/go-lifx/type_registry"
+
 type (
 	bitfield uint16
 
@@ -40,10 +42,10 @@ func (h header) version() uint16 {
 	return 0xfff & uint16(h.Bitfield1) // top 12 bits
 }
 
-var payloads typeRegistry
+var payloads type_registry.TypeRegistry
 
 func init() {
-	payloads = NewTypeRegistry()
+	payloads = type_registry.New()
 
 	type deviceSetSite struct {
 		Site [6]byte
