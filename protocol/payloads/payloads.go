@@ -65,10 +65,6 @@ const (
 	SensorStateDimmerVoltage         = 404
 )
 
-type Payload interface {
-	Id() uint16
-}
-
 func ForId(id uint16) Payload {
 	switch id {
 	case DeviceGetPower:
