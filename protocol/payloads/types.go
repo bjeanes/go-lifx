@@ -96,11 +96,11 @@ type deviceStatePower struct {
 type deviceGetLabel struct{}
 
 type deviceSetLabel struct {
-	Label [32]byte // string
+	Label label // string
 }
 
 type deviceStateLabel struct {
-	Label [32]byte // string
+	Label label // string
 }
 
 type deviceGetTags struct{}
@@ -119,12 +119,12 @@ type deviceGetTagLabels struct {
 
 type deviceSetTagLabels struct {
 	Tags  uint64
-	Label [32]byte
+	Label label
 }
 
 type deviceStateTagLabels struct {
 	Tags  uint64
-	Label [32]byte
+	Label label
 }
 
 type deviceGetVersion struct{}
