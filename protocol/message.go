@@ -6,29 +6,14 @@ import (
 	"errors"
 	"fmt"
 	"github.com/bjeanes/go-lifx/protocol/payloads"
-	"strings"
+	// "strings"
 )
 
 const compatibleVersion = 1024
 
 type message struct {
-	target  [8]byte
-	site    [6]byte
-	atTime  uint64
-	payload payloads.Payload
-}
-
-func (msg message) String() string {
-	t := "<unknown>"
-	if msg.payload != nil {
-		t = strings.Replace(fmt.Sprintf("%T", msg.payload), "*payloads.", "", 1)
-	}
-
-	return strings.Replace(fmt.Sprintf(
-		"LIFXMessage(%s)%+v",
-		t,
-		msg.payload,
-	), "&{", "{", -1)
+	*Header
+	payloads.Payload
 }
 
 func Decode(b []byte) (message, error) {
@@ -62,15 +47,7 @@ func Decode(b []byte) (message, error) {
 		return message{}, err
 	}
 
-	msg := message{
-		atTime:  msgHeader.AtTime,
-		target:  msgHeader.Target,
-		site:    msgHeader.Site,
-		payload: payload,
-		// addressable: 0x1000&uint16(msgHeader.Bitfield1) > 0, // next bit
-		// tagged:      0x2000&uint16(msgHeader.Bitfield1) > 0, // next bit
-		// acknowledge: 0x1&uint16(msgHeader.Bitfield2) > 0, // top bit
-	}
+	msg := message{msgHeader.ToExpandedHeader(), payload}
 
 	return msg, nil
 }
@@ -84,11 +61,9 @@ func (e BadDatagram) Error() string {
 	return e.err.Error()
 }
 
-type errChan chan error
-
-func NewMessageDecoder(datagrams <-chan Datagram) (<-chan message, errChan) {
+func NewMessageDecoder(datagrams <-chan Datagram) (<-chan message, <-chan error) {
 	msgs := make(chan message, 1)
-	errs := make(errChan, 1)
+	errs := make(chan error, 1)
 
 	go func() {
 		for datagram := range datagrams {

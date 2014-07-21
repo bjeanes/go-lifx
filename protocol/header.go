@@ -25,8 +25,33 @@ type (
 
 		_ uint16 // <reserved>
 	}
+
+	Header struct {
+		version     uint16
+		target      [8]byte
+		site        [6]byte
+		atTime      uint64
+		addressable bool
+		tagged      bool
+		acknowledge bool
+	}
 )
 
-func (h header) version() uint16 {
-	return 0xfff & uint16(h.Bitfield1) // top 12 bits
+func (h *header) version() uint16 { return 0xfff & uint16(h.Bitfield1) }
+
+func (raw *header) ToExpandedHeader() *Header {
+	h := new(Header)
+	h.atTime = raw.AtTime
+	h.target = raw.Target
+	h.site = raw.Site
+	h.version = raw.version()                        // top 12 bits
+	h.addressable = 0x1000&uint16(raw.Bitfield1) > 0 // next bit
+	h.tagged = 0x2000&uint16(raw.Bitfield1) > 0      // next bit
+	h.acknowledge = 0x1&uint16(raw.Bitfield2) > 0    // top bit
+	return h
+}
+
+func (h *Header) ToRawHeader() header {
+	// TODO
+	return header{}
 }

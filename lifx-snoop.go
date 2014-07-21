@@ -43,7 +43,7 @@ func main() {
 		select {
 		case msg := <-msgs:
 			out.Add(color.FgGreen)
-			out.Printf("MSG:  %v", &msg)
+			out.Printf("MSG:  %+v\n      %T %+v", msg.Header, msg.Payload, msg.Payload)
 		case err := <-errs:
 			out.Add(color.FgRed)
 			out.Printf("ERR:  %s", err.Error())
