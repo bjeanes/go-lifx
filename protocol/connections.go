@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	broadcastIP = net.IPv4(255, 255, 255, 255)
+	broadcastIP = net.IPv4(224, 0, 0, 1)
 	listenIP    = net.IPv4(0, 0, 0, 0)
 )
 
@@ -76,8 +76,8 @@ func (conn *Connection) setupSockets() (err error) {
 		return
 	}
 
-	read, err := net.ListenUDP("udp4", &net.UDPAddr{
-		IP:   listenIP,
+	read, err := net.ListenMulticastUDP("udp4", nil, &net.UDPAddr{
+		IP:   broadcastIP,
 		Port: broadcastPort,
 	})
 	if err != nil {
