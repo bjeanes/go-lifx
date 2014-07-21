@@ -79,3 +79,10 @@ func ForId(id uint16) Payload {
 		return nil
 	}
 }
+
+func (deviceGetPanGateway) Id() uint16   { return 2 }
+func (deviceStatePanGateway) Id() uint16 { return 3 }
+func (deviceGetPower) Id() uint16        { return 20 }
+func (deviceSetPower) Id() uint16        { return 21 }
+func (deviceStatePower) Id() uint16      { return 22 }
+func (lightState) Id() uint16            { return 107 }

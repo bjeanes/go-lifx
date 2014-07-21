@@ -1,11 +1,5 @@
 package payloads
 
-type (
-	apSecurity uint8
-	ifaceType  uint8
-	wifiStatus uint8
-)
-
 const (
 	_ ifaceType = iota
 	ifaceSoftAP
