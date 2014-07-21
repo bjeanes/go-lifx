@@ -1,7 +1,6 @@
 package protocol
 
 import (
-	"io"
 	"net"
 	"runtime"
 )
@@ -52,19 +51,6 @@ func (conn Connection) Close() (err error) {
 
 	conn.connected = false
 	return
-}
-
-func (conn Connection) writeTo(writer io.WriteCloser) {
-	go func() {
-		for {
-			_, err := io.CopyN(writer, conn.sockets.read, 128)
-			if err != nil {
-				writer.Close()
-				conn.sockets.read.Close()
-				break
-			}
-		}
-	}()
 }
 
 func (conn *Connection) setupSockets() (err error) {
