@@ -81,7 +81,7 @@ type BadDatagram struct {
 }
 
 func (e BadDatagram) Error() string {
-	return fmt.Sprintf("Error (%s) decoding datagram", e.err.Error())
+	return e.err.Error()
 }
 
 type errChan chan error
