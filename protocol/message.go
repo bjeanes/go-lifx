@@ -86,15 +86,6 @@ func (e BadDatagram) Error() string {
 
 type errChan chan error
 
-func (ch errChan) send(err error) {
-	select {
-	case ch <- err:
-		// Error sent
-	default:
-		// Drop error if the channel is blocked.
-	}
-}
-
 func NewMessageDecoder(datagrams <-chan Datagram) (<-chan message, errChan) {
 	msgs := make(chan message, 1)
 	errs := make(errChan, 1)
@@ -104,7 +95,7 @@ func NewMessageDecoder(datagrams <-chan Datagram) (<-chan message, errChan) {
 			msg, err := Decode(datagram.Data)
 
 			if err != nil {
-				errs.send(&BadDatagram{datagram, err})
+				errs <- &BadDatagram{datagram, err}
 				continue
 			}
 
