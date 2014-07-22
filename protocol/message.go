@@ -16,40 +16,54 @@ type message struct {
 	payloads.Payload
 }
 
-func Decode(b []byte) (message, error) {
-	reader := bytes.NewReader(b)
+// http://golang.org/pkg/encoding/#BinaryUnmarshaler
+func (msg *message) UnmarshalBinary(data []byte) error {
+	reader := bytes.NewReader(data)
 	msgHeader := header{}
 	err := binary.Read(reader, binary.LittleEndian, &msgHeader)
 
-	if msgHeader.Size != uint16(len(b)) {
+	if msgHeader.Size != uint16(len(data)) {
 		// TODO: figure out if this is actually a problem or just ignoreable padding/noise at the end of the datagram?
-		return message{}, errors.New(fmt.Sprintf("Incorrect message size (data: %d, header: %d)", len(b), msgHeader.Size))
+		return errors.New(fmt.Sprintf("Incorrect message size (data: %d, header: %d)", len(data), msgHeader.Size))
 	}
 
 	if v := msgHeader.version(); v != compatibleVersion {
-		return message{}, errors.New(fmt.Sprintf("Unknown message version (%d)", v))
+		return errors.New(fmt.Sprintf("Unknown message version (%d)", v))
 	}
 
 	payload := payloads.ForId(msgHeader.Type)
 	if payload != nil {
 		if reader.Len() != binary.Size(payload) {
-			return message{}, errors.New(fmt.Sprintf("Unexpected payload size for %T", payload))
+			return errors.New(fmt.Sprintf("Unexpected payload size for %T", payload))
 		}
 
 		if err := binary.Read(reader, binary.LittleEndian, payload); err != nil {
-			return message{}, err
+			return err
 		}
 	} else {
-		return message{}, fmt.Errorf("Unknown message (%d)", msgHeader.Type)
+		return fmt.Errorf("Unknown message (%d)", msgHeader.Type)
 	}
 
 	if err != nil {
-		return message{}, err
+		return err
 	}
 
-	msg := message{msgHeader.ToExpandedHeader(), payload}
+	msg.Header = msgHeader.ToExpandedHeader()
+	msg.Payload = payload
 
-	return msg, nil
+	return nil
+}
+
+// http://golang.org/pkg/encoding/#BinaryMarshaler
+func (m *message) MarshalText() (text []byte, err error) {
+	// TODO
+	return
+}
+
+func Decode(b []byte) (message, error) {
+	msg := new(message)
+	err := msg.UnmarshalBinary(b)
+	return *msg, err
 }
 
 type BadDatagram struct {
