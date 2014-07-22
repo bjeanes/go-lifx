@@ -55,7 +55,7 @@ func (msg *message) UnmarshalBinary(data []byte) error {
 }
 
 // http://golang.org/pkg/encoding/#BinaryMarshaler
-func (m *message) MarshalText() (text []byte, err error) {
+func (m *message) MarshalBinary() (data []byte, err error) {
 	// TODO
 	return
 }
