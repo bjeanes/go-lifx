@@ -1,3 +1,7 @@
+[![Build Status](https://img.shields.io/travis/bjeanes/go-lifx.svg)](https://travis-ci.org/bjeanes/go-lifx)
+[![GoDoc](https://godoc.org/github.com/bjeanes/go-lifx?status.svg)](http://godoc.org/github.com/bjeanes/go-lifx)
+[![License](http://img.shields.io/badge/license-MIT-green.svg)](http://bjeanes.mit-license.org/)
+
 go-lifx
 =======
 
