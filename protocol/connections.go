@@ -7,7 +7,7 @@ import (
 
 const (
 	broadcastPort   = 56700
-	peerPort        = 56750 // not yet needed
+	peerPort        = 56750 // not yet used
 	defaultReadSize = 128
 )
 
