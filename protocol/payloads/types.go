@@ -19,243 +19,243 @@ type (
 	wifiStatus uint8
 )
 
-type lightHsbk struct {
+type LightHsbk struct {
 	Hue        uint16 // 0-65535 scaled to 0-360°
 	Saturation uint16 // 0-65535 scaled to 0-100%
 	Brightness uint16 // 0-65535 scaled to 0-100%
 	Kelvin     uint16 // absolute 2400-10000
 }
 
-type deviceSetSite struct {
+type DeviceSetSite struct {
 	Site [6]byte
 }
 
-type deviceGetPanGateway struct{}
+type DeviceGetPanGateway struct{}
 
-type deviceStatePanGateway struct {
+type DeviceStatePanGateway struct {
 	Service uint8  // 1 for UDP; 2 for TCP
 	Port    uint32 // 0 for disabled, else it's the service port
 }
 
-type deviceTime struct{}
+type DeviceTime struct{}
 
-type deviceSetTime struct {
+type DeviceSetTime struct {
 	Time uint64 // nanos since epoch
 }
 
-type deviceStateTime struct {
+type DeviceStateTime struct {
 	Time uint64 // nanos since epoch
 }
 
-type deviceGetResetSwitch struct{}
+type DeviceGetResetSwitch struct{}
 
-type deviceStateResetSwitch struct {
+type DeviceStateResetSwitch struct {
 	Position uint8
 }
 
-type deviceGetMeshInfo struct{}
+type DeviceGetMeshInfo struct{}
 
-type deviceStateMeshInfo struct {
+type DeviceStateMeshInfo struct {
 	Signal         float32 // milliwatts
 	Tx, Rx         uint32  // bytes
 	McuTemperature int16   // deci-celsius
 }
 
-type deviceGetMeshFirmware struct{}
+type DeviceGetMeshFirmware struct{}
 
-type deviceStateMeshFirmware struct {
+type DeviceStateMeshFirmware struct {
 	Build, Install uint64
 	Version        uint32
 }
 
-type deviceGetWifiInfo struct{}
+type DeviceGetWifiInfo struct{}
 
-type deviceStateWifiInfo struct {
+type DeviceStateWifiInfo struct {
 	Signal         float32 // milliwatts
 	Tx, Rx         uint32  // bytes
 	McuTemperature int16   // deci-celsius
 }
 
-type deviceGetWifiFirmware struct{}
+type DeviceGetWifiFirmware struct{}
 
-type deviceStateWifiFirmware struct {
+type DeviceStateWifiFirmware struct {
 	Build, Install uint64
 	Version        uint32
 }
 
-type deviceGetPower struct{}
+type DeviceGetPower struct{}
 
-type deviceSetPower struct {
+type DeviceSetPower struct {
 	Level uint16 // 0 = off; 1+ = on
 }
 
-type deviceStatePower struct {
+type DeviceStatePower struct {
 	Level uint16 // 0 = off; 1+ = on
 }
 
-type deviceGetLabel struct{}
+type DeviceGetLabel struct{}
 
-type deviceSetLabel struct {
+type DeviceSetLabel struct {
 	Label label // string
 }
 
-type deviceStateLabel struct {
+type DeviceStateLabel struct {
 	Label label // string
 }
 
-type deviceGetTags struct{}
+type DeviceGetTags struct{}
 
-type deviceSetTags struct {
+type DeviceSetTags struct {
 	Tags uint64
 }
 
-type deviceStateTags struct {
+type DeviceStateTags struct {
 	Tags uint64
 }
 
-type deviceGetTagLabels struct {
+type DeviceGetTagLabels struct {
 	Tags uint64
 }
 
-type deviceSetTagLabels struct {
+type DeviceSetTagLabels struct {
 	Tags  uint64
 	Label label
 }
 
-type deviceStateTagLabels struct {
+type DeviceStateTagLabels struct {
 	Tags  uint64
 	Label label
 }
 
-type deviceGetVersion struct{}
+type DeviceGetVersion struct{}
 
-type deviceStateVersion struct {
+type DeviceStateVersion struct {
 	Vendor, Product, Version uint32
 }
 
-type deviceGetInfo struct{}
+type DeviceGetInfo struct{}
 
-type deviceStateInfo struct {
+type DeviceStateInfo struct {
 	Time, Uptime, Downtime uint64 // ns
 }
 
-type deviceGetMcuRailVoltage struct{}
+type DeviceGetMcuRailVoltage struct{}
 
-type deviceStateMcuRailVoltage struct {
+type DeviceStateMcuRailVoltage struct {
 	Voltage uint32
 }
 
-type deviceReboot struct{}
+type DeviceReboot struct{}
 
-type lightGet struct{}
+type LightGet struct{}
 
-type lightSet struct {
+type LightSet struct {
 	Stream   uint8
-	Color    lightHsbk
+	Color    LightHsbk
 	Duration uint32 // ms
 }
 
-type lightSetWaveform struct {
+type LightSetWaveform struct {
 	Stream    uint8
 	Transient uint8 // 0 false; 1+ true
-	Color     lightHsbk
+	Color     LightHsbk
 	Period    uint32 // ms per cycle
 	DutyCycle int16
 	Waveform  uint8
 }
 
-type lightSetDimAbsolute struct {
+type LightSetDimAbsolute struct {
 	Brightness int32  // 0 for no change
 	Duration   uint32 // ms
 }
 
-type lightSetDimRelative struct {
+type LightSetDimRelative struct {
 	Brightness int32  // 0 for no change
 	Duration   uint32 // ms
 }
 
-type lightSetRgbw struct {
+type LightSetRgbw struct {
 	Color struct {
 		Red, Green, Blue, White uint16
 	}
 }
 
-type lightState struct {
-	Color lightHsbk
+type LightState struct {
+	Color LightHsbk
 	Dim   int16
 	Power uint16
 	Label label
 	Tags  uint64
 }
 
-type lightGetRailVoltage struct{}
+type LightGetRailVoltage struct{}
 
-type lightStateRailVoltage struct {
+type LightStateRailVoltage struct {
 	Voltage uint32
 }
 
-type lightGetTemperature struct{}
+type LightGetTemperature struct{}
 
-type lightStateTemperature struct {
+type LightStateTemperature struct {
 	Temperature int16 // deci-celsius
 }
 
-type wanConnectPlain struct {
+type WanConnectPlain struct {
 	User, Pass [32]byte
 }
 
-type wanConnectKey struct {
+type WanConnectKey struct {
 	AuthKey [32]byte
 }
 
-type wanStateConnect struct {
+type WanStateConnect struct {
 	AuthKey [32]byte
 }
 
-type wanSub struct {
+type WanSub struct {
 	Target [8]byte
 	Site   [6]byte
 	Device uint8 // 0 device; 1 tag
 }
 
-type wanUnsub struct {
+type WanUnsub struct {
 	Target [8]byte
 	Site   [6]byte
 	Device uint8 // 0 device; 1 tag
 }
 
-type wanStateSub struct {
+type WanStateSub struct {
 	Target [8]byte
 	Site   [6]byte
 	Device uint8 // 0 device; 1 tag
 }
 
-type wifiGet struct {
+type WifiGet struct {
 	Iface ifaceType
 }
 
-type wifiSet struct {
+type WifiSet struct {
 	Iface  ifaceType
 	Active uint8 // 0 false; 1 true
 }
 
-type wifiState struct {
+type WifiState struct {
 	Iface  ifaceType
 	Status wifiStatus
 	Ipv4   uint32
 	Ipv6   [16]byte
 }
 
-type wifiGetAccessPoint struct{}
+type WifiGetAccessPoint struct{}
 
-type wifiSetAccessPoint struct {
+type WifiSetAccessPoint struct {
 	Iface    ifaceType
 	Ssid     [32]byte
 	Password [64]byte
 	Security apSecurity
 }
 
-type wifiStateAccessPoint struct {
+type WifiStateAccessPoint struct {
 	Iface    ifaceType
 	Ssid     [32]byte
 	Password [64]byte
@@ -263,14 +263,14 @@ type wifiStateAccessPoint struct {
 	Channel  uint16
 }
 
-type sensorGetAmbientLight struct{}
+type SensorGetAmbientLight struct{}
 
-type sensorStateAmbientLight struct {
+type SensorStateAmbientLight struct {
 	Lux float32
 }
 
-type sensorGetDimmerVoltage struct{}
+type SensorGetDimmerVoltage struct{}
 
-type sensorStateDimmerVoltage struct {
+type SensorStateDimmerVoltage struct {
 	Voltage uint32
 }
