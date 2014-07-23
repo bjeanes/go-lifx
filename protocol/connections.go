@@ -5,10 +5,7 @@ import (
 	"runtime"
 )
 
-var (
-	broadcastIP = net.IPv4(224, 0, 0, 1)
-	listenIP    = net.IPv4(0, 0, 0, 0)
-)
+var broadcastIP = net.IPv4(224, 0, 0, 1)
 
 const (
 	broadcastPort   = 56700
