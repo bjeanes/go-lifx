@@ -247,6 +247,68 @@ func TestDecodeLightState(t *T) {
 
 }
 
+func TestDeviceSetPowerOn(t *T) {
+  // DATA: length=38
+  //       000  26 00 00 54 00 00 00 00  d0 73 d5 00 f9 14 00 00  |&..T.....s......|
+  //       010  4c 49 46 58 56 32 00 00  00 00 00 00 00 00 00 00  |LIFXV2..........|
+  //       020  15 00 00 00 00 00                                 |......|
+  // MSG:  &{version:1024 target:[208 115 213 0 249 20 0 0] site:[76 73 70 88 86 50] atTime:0 addressable:true tagged:false acknowledge:false}
+  //       *payloads.DeviceSetPower &{Level:1}
+
+  b := []byte{
+    0x26, 0x00, 0x00, 0x54, 0x00, 0x00, 0x00, 0x00, 
+    0xd0, 0x73, 0xd5, 0x00, 0xf9, 0x14, 0x00, 0x00,
+
+    0x4c, 0x49, 0x46, 0x58, 0x56, 0x32, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+
+    0x15, 0x00, 0x00, 0x00, 0x01, 0x00,
+  }
+
+  msg, err := Decode(b)
+
+  if err != nil {
+    t.Error("Decode failed with err: " + err.Error())
+  }
+
+  payload := msg.Payload.(*payloads.DeviceSetPower)
+
+  if payload.Level != 1 {
+    t.Error("Level incorrect")
+  }
+}
+
+func TestDeviceSetPowerOff(t *T) {
+  // DATA: length=38
+  //       000  26 00 00 54 00 00 00 00  d0 73 d5 00 f9 14 00 00  |&..T.....s......|
+  //       010  4c 49 46 58 56 32 00 00  00 00 00 00 00 00 00 00  |LIFXV2..........|
+  //       020  15 00 00 00 00 00                                 |......|
+  // MSG:  &{version:1024 target:[208 115 213 0 249 20 0 0] site:[76 73 70 88 86 50] atTime:0 addressable:true tagged:false acknowledge:false}
+  //       *payloads.DeviceSetPower &{Level:0}
+
+  b := []byte{
+    0x26, 0x00, 0x00, 0x54, 0x00, 0x00, 0x00, 0x00, 
+    0xd0, 0x73, 0xd5, 0x00, 0xf9, 0x14, 0x00, 0x00,
+
+    0x4c, 0x49, 0x46, 0x58, 0x56, 0x32, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+
+    0x15, 0x00, 0x00, 0x00, 0x00, 0x00,
+  }
+
+  msg, err := Decode(b)
+
+  if err != nil {
+    t.Error("Decode failed with err: " + err.Error())
+  }
+
+  payload := msg.Payload.(*payloads.DeviceSetPower)
+
+  if payload.Level != 0 {
+    t.Error("Level incorrect")
+  }
+}
+
 func TestDecodeDeviceStatePower(t *T) {
   // DATA: length=38
   //       000  26 00 00 54 00 00 00 00  d0 73 d5 00 f9 14 00 00  |&..T.....s......|
