@@ -8,9 +8,9 @@ It is (or will be) comprised of loosely three sections:
 
 * **Protocol** - Encoding/decoding of LIFX messages and transmission/reception
   of such.
-* **Library** - Higher-level abstractions ("light bulb", "label", "colors",
+* **Client** - Higher-level abstractions ("light bulb", "label", "colors",
   etc.) and actions ("set label", "set lights to a specific colour", etc.).
-* **CLI Tools** - These are foremost examples of using the **Library** and/or
+* **CLI Tools** - These are foremost examples of using the **Client** and/or
   **Protocol** components but also serve as debugging tools and command line
   control over bulbs (e.g. from Bash scripts).
 
