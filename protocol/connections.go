@@ -19,6 +19,7 @@ const (
 type Connection struct {
 	Datagrams chan Datagram
 	connected bool
+	lastErr   error
 	sockets   struct {
 		read, write *net.UDPConn
 	}
@@ -27,6 +28,14 @@ type Connection struct {
 type Datagram struct {
 	From net.Addr
 	Data []byte
+}
+
+func (conn Connection) LastError() error {
+	return conn.lastErr
+}
+
+func (conn Connection) IsError() bool {
+	return conn.LastError != nil
 }
 
 func (conn Connection) IsConnected() bool {
@@ -88,8 +97,9 @@ func Connect() (*Connection, error) {
 
 			for {
 				n, addr, err := conn.sockets.read.ReadFrom(b)
+				conn.lastErr = err
 
-				if err != nil {
+				if conn.IsError() {
 					close(conn.Datagrams)
 					break
 				}
