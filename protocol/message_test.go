@@ -247,66 +247,13 @@ func TestDecodeLightState(t *T) {
 
 }
 
-func TestDecodeDeviceStatePowerOff(t *T) {
+func TestDecodeDeviceStatePower(t *T) {
   // DATA: length=38
   //       000  26 00 00 54 00 00 00 00  d0 73 d5 00 f9 14 00 00  |&..T.....s......|
   //       010  4c 49 46 58 56 32 00 00  00 00 00 00 00 00 00 00  |LIFXV2..........|
   //       020  16 00 00 00 00 00                                 |......|
   // MSG:  &{version:1024 target:[208 115 213 0 249 20 0 0] site:[76 73 70 88 86 50] atTime:0 addressable:true tagged:false acknowledge:false}
-  //       *payloads.DeviceStatePower &{Level:0}
-
-  b := []byte{
-    0x26, 0x00, 0x00, 0x54, 0x00, 0x00, 0x00, 0x00, 
-    0xd0, 0x73, 0xd5, 0x00, 0xf9, 0x14, 0x00, 0x00,
-
-    0x4c, 0x49, 0x46, 0x58, 0x56, 0x32, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-
-    0x16, 0x00, 0x00, 0x00, 0x00, 0x00,
-  }
-
-   msg, err := Decode(b)
-
-  if err != nil {
-    t.Error("Decode failed with err: " + err.Error())
-  }
-
-  if msg.atTime != 0 {
-    t.Error("atTime field incorrect")
-  }
-
-  if msg.version != 1024 {
-    t.Error("protocol version field incorrect")
-  }
-
-  if !msg.addressable {
-    t.Error("adressable field should be true")
-  }
-
-  expectedTargetID := [8]byte{0xd0, 0x73, 0xd5, 0x00, 0xf9, 0x14, 0x00, 0x00}
-  if msg.Header.target != expectedTargetID {
-    t.Error("Target incorrect")
-  }
-
-  expectedSiteID := [6]byte{0x4c, 0x49, 0x46, 0x58, 0x56, 0x32}
-  if msg.Header.site != expectedSiteID {
-    t.Error("Site incorrect")
-  }
-
-  payload := msg.Payload.(*payloads.DeviceStatePower)
-
-  if payload.Level != 0 {
-    t.Error("Power level incorrect")
-  }
-}
-
-func TestDecodeDeviceStatePowerOn(t *T) {
-  // DATA: length=38
-  //       000  26 00 00 54 00 00 00 00  d0 73 d5 00 f9 14 00 00  |&..T.....s......|
-  //       010  4c 49 46 58 56 32 00 00  00 00 00 00 00 00 00 00  |LIFXV2..........|
-  //       020  16 00 00 00 00 00                                 |......|
-  // MSG:  &{version:1024 target:[208 115 213 0 249 20 0 0] site:[76 73 70 88 86 50] atTime:0 addressable:true tagged:false acknowledge:false}
-  //       *payloads.DeviceStatePower &{Level:0}
+  //       *payloads.DeviceStatePower &{Level:65535}
 
   b := []byte{
     0x26, 0x00, 0x00, 0x54, 0x00, 0x00, 0x00, 0x00, 
