@@ -100,6 +100,11 @@ func (conn *Connection) setupSockets() (err error) {
 	return
 }
 
+// Starts UDP connections to send and receive datagrams. Returns a Connection struct
+// which contains a channel that should be used to receive new UDP packets.
+//
+// The connection channel will be closed on a socket error. The error can be retrieved
+// with the LastError() method on the connection.
 func Connect() (*Connection, error) {
 	conn := &Connection{
 		Datagrams: make(chan Datagram),
