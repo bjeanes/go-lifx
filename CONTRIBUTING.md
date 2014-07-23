@@ -6,7 +6,7 @@ The usual pull request work flow applies here with the following specificities:
 
 1. Annotate pull requests with their WIP status. A label or title prefix is fine.
    WIP pull requests are unstable and can be rebased. Non-WIP pull requests are
-   append-only and generally safe to merge, posisbly with the author's
+   append-only and generally safe to merge, possibly with the author's
    coordination.
 1. Give [good feedback][good-feedback] in code reviews (and in general). That
    is, it should be:
