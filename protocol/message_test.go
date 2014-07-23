@@ -70,6 +70,16 @@ func TestDecodeDeviceStatePanGatewayService1(t *T) {
     t.Error("adressable field should be true")
   }
 
+  expectedTargetID := [8]byte{0xd0, 0x73, 0xd5, 0x00, 0xf9, 0x14, 0x00, 0x00}
+  if msg.Header.target != expectedTargetID {
+    t.Error("Target incorrect")
+  }
+
+  expectedSiteID := [6]byte{0x4c, 0x49, 0x46, 0x58, 0x56, 0x32}
+  if msg.Header.site != expectedSiteID {
+    t.Error("Site incorrect")
+  }
+
   payload := msg.Payload.(*payloads.DeviceStatePanGateway)
 
   if payload.Service != 1 {
@@ -113,6 +123,16 @@ func TestDecodeDeviceStatePanGatewayService2(t *T) {
 
   if !msg.addressable {
     t.Error("adressable field should be true")
+  }
+
+  expectedTargetID := [8]byte{0xd0, 0x73, 0xd5, 0x00, 0xf9, 0x14, 0x00, 0x00}
+  if msg.Header.target != expectedTargetID {
+    t.Error("Target incorrect")
+  }
+
+  expectedSiteID := [6]byte{0x4c, 0x49, 0x46, 0x58, 0x56, 0x32}
+  if msg.Header.site != expectedSiteID {
+    t.Error("Site incorrect")
   }
 
   payload := msg.Payload.(*payloads.DeviceStatePanGateway)
