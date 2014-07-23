@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/bjeanes/go-lifx/version"
+	"github.com/bjeanes/go-lifx"
 	"github.com/codegangsta/cli"
 	"os"
 )
@@ -10,7 +10,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "lifx"
 	app.Usage = "Control LIFX bulbs from the command line"
-	app.Version = version.Version
+	app.Version = lifx.Version
 	app.Action = func(c *cli.Context) {
 		cli.ShowAppHelp(c)
 	}
