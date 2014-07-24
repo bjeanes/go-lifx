@@ -4,5 +4,5 @@ go:
   - 1.3
 script:
   - "go test -v ./..."
-  - "gofmt -l -w -s -e **/*.go && git diff-index --quiet HEAD --"
+  - "git checkout -q -f $TRAVIS_COMMIT; gofmt -l -w -s -e **/*.go && git diff-index --quiet HEAD --"
 
