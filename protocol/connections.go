@@ -30,7 +30,7 @@ func (conn Connection) LastError() error {
 }
 
 func (conn Connection) IsError() bool {
-	return conn.LastError != nil
+	return conn.LastError() != nil
 }
 
 func (conn Connection) IsConnected() bool {
