@@ -21,22 +21,22 @@ func main() {
 	}
 
 	app.Commands = []cli.Command{
-		cli.Command{
+		{
 			Name:   "list",
 			Usage:  "List all discovered bulbs",
 			Action: func(_ *cli.Context) {},
 		},
-		cli.Command{
+		{
 			Name:   "on",
 			Usage:  "Turn light(s) on",
 			Action: func(_ *cli.Context) {},
 		},
-		cli.Command{
+		{
 			Name:   "off",
 			Usage:  "Turn light(s) off",
 			Action: func(_ *cli.Context) {},
 		},
-		cli.Command{
+		{
 			Name:  "change",
 			Usage: "Change specified color attributes of light(s)",
 			Flags: []cli.Flag{
