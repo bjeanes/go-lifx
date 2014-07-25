@@ -1,6 +1,9 @@
 package protocol
 
 import (
+	"bytes"
+	"encoding/hex"
+	"fmt"
 	"github.com/bjeanes/go-lifx/protocol/payloads"
 	. "testing"
 )
@@ -390,5 +393,56 @@ func TestDecodeDeviceStateTime(t *T) {
 
 	if !msg.Addressable {
 		t.Error("adressable field should be true")
+	}
+}
+
+func TestMarshalBinary(t *T) {
+	msg := Message{}
+	target := [8]byte{0xd0, 0x73, 0xd5, 0x00, 0x49, 0x14, 0x00, 0x00}
+	site := [6]byte{0x4c, 0x49, 0x46, 0x58, 0x56, 0x32}
+	header := Header{
+		Version: 1024,
+
+		Target:      target,
+		Site:        site,
+		AtTime:      0,
+		Addressable: false,
+		Tagged:      false,
+		Acknowledge: false,
+	}
+	msg.Header = &header
+	msg.Payload = payloads.DeviceGetPanGateway{}
+
+	data, err := msg.MarshalBinary()
+	if err != nil {
+		t.Error(err)
+	}
+
+	// t.Log("\n" + hex.Dump(data))
+	// It should be this:
+	// DATA: length=36
+	// 00000000  24 00 00 04 00 00 00 00  d0 73 d5 00 49 14 00 00  |$........s..I...|
+	// 00000010  4c 49 46 58 56 32 00 00  00 00 00 00 00 00 00 00  |LIFXV2..........|
+	// 00000020  02 00 00 00                                       |....|
+
+	if !bytes.Equal(data[0:2], []byte{0x24, 0x00}) {
+		t.Error("Size incorrect")
+	}
+
+	if !bytes.Equal(data[3:4], []byte{0x04}) {
+		t.Error("Incorrect bitfield combo of version, addressable and tagged.")
+		t.Error(fmt.Sprintf("Expected 0x04, but got 0x%s", hex.EncodeToString(data[3:4])))
+	}
+
+	if !bytes.Equal(data[8:16], target[0:8]) {
+		t.Error("Target incorrect")
+	}
+
+	if !bytes.Equal(data[16:22], site[0:6]) {
+		t.Error("Site incorrect")
+	}
+
+	if !bytes.Equal(data[32:34], []byte{0x02, 0x00}) {
+		t.Error("Message type incorrect")
 	}
 }

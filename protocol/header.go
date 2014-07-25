@@ -51,7 +51,23 @@ func (raw *header) ToExpandedHeader() *Header {
 	return h
 }
 
+// uint16 instead of uint8 else the bit-shifting will overflow
+func btou(b bool) uint16 {
+	if b {
+		return 1
+	}
+	return 0
+}
+
 func (h *Header) ToRawHeader() header {
-	// TODO
-	return header{}
+	raw := new(header)
+	raw.Target = h.Target
+	raw.Site = h.Site
+	raw.AtTime = h.AtTime
+
+	addressable := btou(h.Addressable) << 12
+	tagged := btou(h.Tagged) << 13
+	raw.Bitfield1 = bitfield(h.Version | addressable | tagged)
+
+	return *raw
 }

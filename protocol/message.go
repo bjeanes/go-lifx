@@ -10,6 +10,7 @@ import (
 )
 
 const compatibleVersion = 1024
+const headerSize = 36
 
 type Message struct {
 	*Header
@@ -55,9 +56,25 @@ func (msg *Message) UnmarshalBinary(data []byte) error {
 }
 
 // http://golang.org/pkg/encoding/#BinaryMarshaler
-func (m *Message) MarshalBinary() (data []byte, err error) {
-	// TODO
-	return
+func (m *Message) MarshalBinary() ([]byte, error) {
+	buf := bytes.NewBuffer([]byte{})
+	err := binary.Write(buf, binary.LittleEndian, m.Payload)
+	if err != nil {
+		return []byte{}, err
+	}
+	payloadBytes := buf.Bytes()
+
+	raw := m.Header.ToRawHeader()
+	raw.Size = headerSize + uint16(len(payloadBytes))
+	raw.Type = m.Payload.Id()
+	buf.Truncate(0)
+	err = binary.Write(buf, binary.LittleEndian, raw)
+
+	if err != nil {
+		return []byte{}, err
+	}
+
+	return append(buf.Bytes(), payloadBytes...), nil
 }
 
 func Decode(b []byte) (Message, error) {
