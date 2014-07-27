@@ -27,15 +27,15 @@ func TestDecodeDeviceGetPanGateway(t *T) {
 		t.Error("Decode failed with err: " + err.Error())
 	}
 
-	if msg.atTime != 0 {
+	if msg.AtTime != 0 {
 		t.Error("atTime field incorrect")
 	}
 
-	if msg.version != 1024 {
+	if msg.Version != 1024 {
 		t.Error("protocol version field incorrect")
 	}
 
-	if !msg.addressable {
+	if !msg.Addressable {
 		t.Error("adressable field should be true")
 	}
 }
@@ -62,25 +62,25 @@ func TestDecodeDeviceStatePanGatewayService1(t *T) {
 		t.Error("Decode failed with err: " + err.Error())
 	}
 
-	if msg.atTime != 0 {
+	if msg.AtTime != 0 {
 		t.Error("atTime field incorrect")
 	}
 
-	if msg.version != 1024 {
+	if msg.Version != 1024 {
 		t.Error("protocol version field incorrect")
 	}
 
-	if !msg.addressable {
+	if !msg.Addressable {
 		t.Error("adressable field should be true")
 	}
 
 	expectedTargetID := [8]byte{0xd0, 0x73, 0xd5, 0x00, 0xf9, 0x14, 0x00, 0x00}
-	if msg.Header.target != expectedTargetID {
+	if msg.Header.Target != expectedTargetID {
 		t.Error("Target incorrect")
 	}
 
 	expectedSiteID := [6]byte{0x4c, 0x49, 0x46, 0x58, 0x56, 0x32}
-	if msg.Header.site != expectedSiteID {
+	if msg.Header.Site != expectedSiteID {
 		t.Error("Site incorrect")
 	}
 
@@ -119,25 +119,25 @@ func TestDecodeDeviceStatePanGatewayService2(t *T) {
 		t.Error("Decode failed with err: " + err.Error())
 	}
 
-	if msg.atTime != 0 {
+	if msg.AtTime != 0 {
 		t.Error("atTime field incorrect")
 	}
 
-	if msg.version != 1024 {
+	if msg.Version != 1024 {
 		t.Error("protocol version field incorrect")
 	}
 
-	if !msg.addressable {
+	if !msg.Addressable {
 		t.Error("adressable field should be true")
 	}
 
 	expectedTargetID := [8]byte{0xd0, 0x73, 0xd5, 0x00, 0xf9, 0x14, 0x00, 0x00}
-	if msg.Header.target != expectedTargetID {
+	if msg.Header.Target != expectedTargetID {
 		t.Error("Target incorrect")
 	}
 
 	expectedSiteID := [6]byte{0x4c, 0x49, 0x46, 0x58, 0x56, 0x32}
-	if msg.Header.site != expectedSiteID {
+	if msg.Header.Site != expectedSiteID {
 		t.Error("Site incorrect")
 	}
 
@@ -188,25 +188,25 @@ func TestDecodeLightState(t *T) {
 		t.Error("Decode failed with err: " + err.Error())
 	}
 
-	if msg.atTime != 0 {
+	if msg.AtTime != 0 {
 		t.Error("atTime field incorrect")
 	}
 
-	if msg.version != 1024 {
+	if msg.Version != 1024 {
 		t.Error("protocol version field incorrect")
 	}
 
-	if !msg.addressable {
+	if !msg.Addressable {
 		t.Error("adressable field should be true")
 	}
 
 	expectedTargetID := [8]byte{0xd0, 0x73, 0xd5, 0x00, 0xf9, 0x14, 0x00, 0x00}
-	if msg.Header.target != expectedTargetID {
+	if msg.Header.Target != expectedTargetID {
 		t.Error("Target incorrect")
 	}
 
 	expectedSiteID := [6]byte{0x4c, 0x49, 0x46, 0x58, 0x56, 0x32}
-	if msg.Header.site != expectedSiteID {
+	if msg.Header.Site != expectedSiteID {
 		t.Error("Site incorrect")
 	}
 
@@ -249,14 +249,14 @@ func TestDecodeLightState(t *T) {
 
 func TestDeviceSetPowerOn(t *T) {
 	// DATA: length=38
-	//       000  26 00 00 54 00 00 00 00  d0 73 d5 00 f9 14 00 00  |&..T.....s......|
+	//       000  26 00 00 34 00 00 00 00  00 00 00 00 00 00 00 00  |&..4............|
 	//       010  4c 49 46 58 56 32 00 00  00 00 00 00 00 00 00 00  |LIFXV2..........|
-	//       020  15 00 00 00 00 00                                 |......|
-	// MSG:  &{version:1024 target:[208 115 213 0 249 20 0 0] site:[76 73 70 88 86 50] atTime:0 addressable:true tagged:false acknowledge:false}
+	//       020  15 00 00 00 01 00                                 |......|
+	// MSG:  &{Version:1024 Target:[0 0 0 0 0 0 0 0] Site:[76 73 70 88 86 50] AtTime:0 Addressable:true Tagged:true Acknowledge:false}
 	//       *payloads.DeviceSetPower &{Level:1}
 
 	b := []byte{
-		0x26, 0x00, 0x00, 0x54, 0x00, 0x00, 0x00, 0x00,
+		0x26, 0x00, 0x00, 0x34, 0x00, 0x00, 0x00, 0x00,
 		0xd0, 0x73, 0xd5, 0x00, 0xf9, 0x14, 0x00, 0x00,
 
 		0x4c, 0x49, 0x46, 0x58, 0x56, 0x32, 0x00, 0x00,
@@ -333,25 +333,25 @@ func TestDecodeDeviceStatePower(t *T) {
 		t.Error("Decode failed with err: " + err.Error())
 	}
 
-	if msg.atTime != 0 {
+	if msg.AtTime != 0 {
 		t.Error("atTime field incorrect")
 	}
 
-	if msg.version != 1024 {
+	if msg.Version != 1024 {
 		t.Error("protocol version field incorrect")
 	}
 
-	if !msg.addressable {
+	if !msg.Addressable {
 		t.Error("adressable field should be true")
 	}
 
 	expectedTargetID := [8]byte{0xd0, 0x73, 0xd5, 0x00, 0xf9, 0x14, 0x00, 0x00}
-	if msg.Header.target != expectedTargetID {
+	if msg.Header.Target != expectedTargetID {
 		t.Error("Target incorrect")
 	}
 
 	expectedSiteID := [6]byte{0x4c, 0x49, 0x46, 0x58, 0x56, 0x32}
-	if msg.Header.site != expectedSiteID {
+	if msg.Header.Site != expectedSiteID {
 		t.Error("Site incorrect")
 	}
 
@@ -380,15 +380,15 @@ func TestDecodeDeviceStateTime(t *T) {
 		t.Error("Decode failed with err: " + err.Error())
 	}
 
-	if msg.atTime != 0 {
+	if msg.AtTime != 0 {
 		t.Error("atTime field incorrect")
 	}
 
-	if msg.version != 1024 {
+	if msg.Version != 1024 {
 		t.Error("protocol version field incorrect")
 	}
 
-	if !msg.addressable {
+	if !msg.Addressable {
 		t.Error("adressable field should be true")
 	}
 }

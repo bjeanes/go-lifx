@@ -11,13 +11,13 @@ import (
 
 const compatibleVersion = 1024
 
-type message struct {
+type Message struct {
 	*Header
 	payloads.Payload
 }
 
 // http://golang.org/pkg/encoding/#BinaryUnmarshaler
-func (msg *message) UnmarshalBinary(data []byte) error {
+func (msg *Message) UnmarshalBinary(data []byte) error {
 	reader := bytes.NewReader(data)
 	msgHeader := header{}
 	err := binary.Read(reader, binary.LittleEndian, &msgHeader)
@@ -55,13 +55,13 @@ func (msg *message) UnmarshalBinary(data []byte) error {
 }
 
 // http://golang.org/pkg/encoding/#BinaryMarshaler
-func (m *message) MarshalBinary() (data []byte, err error) {
+func (m *Message) MarshalBinary() (data []byte, err error) {
 	// TODO
 	return
 }
 
-func Decode(b []byte) (message, error) {
-	msg := new(message)
+func Decode(b []byte) (Message, error) {
+	msg := new(Message)
 	err := msg.UnmarshalBinary(b)
 	return *msg, err
 }
@@ -75,8 +75,8 @@ func (e BadDatagram) Error() string {
 	return e.err.Error()
 }
 
-func NewMessageDecoder(datagrams <-chan Datagram) (<-chan message, <-chan error) {
-	msgs := make(chan message, 1)
+func NewMessageDecoder(datagrams <-chan Datagram) (<-chan Message, <-chan error) {
+	msgs := make(chan Message, 1)
 	errs := make(chan error, 1)
 
 	go func() {
