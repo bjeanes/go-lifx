@@ -7,7 +7,7 @@ import (
 
 const (
 	broadcastPort   = 56700
-	peerPort        = 56750 // not yet used
+	peerPort        = 56750
 	defaultReadSize = 128
 )
 
@@ -16,7 +16,7 @@ type Connection struct {
 	connected bool
 	lastErr   error
 	sockets   struct {
-		read, write *net.UDPConn
+		broadcast, peer, write *net.UDPConn
 	}
 }
 
@@ -42,11 +42,11 @@ func (conn Connection) Close() (err error) {
 		return
 	}
 
-	err = conn.sockets.read.Close()
+	err = conn.sockets.broadcast.Close()
 	if err != nil {
 		return
 	}
-	err = conn.sockets.write.Close()
+	err = conn.sockets.peer.Close()
 	if err != nil {
 		return
 	}
@@ -110,8 +110,22 @@ func (conn *Connection) setupSockets() (err error) {
 	// [3]: http://en.wikipedia.org/wiki/Multicast_address#Local_subnetwork
 	ip := net.IPv4(224, 0, 0, 1)
 
-	// We may be able to write directly to the below multicast socket anyway, in which
-	// case this may not be needed. Not tested yet.
+	peer, err := net.ListenMulticastUDP("udp4", nil, &net.UDPAddr{
+		IP:   ip,
+		Port: peerPort,
+	})
+	if err != nil {
+		return
+	}
+
+	broadcast, err := net.ListenMulticastUDP("udp4", nil, &net.UDPAddr{
+		IP:   ip,
+		Port: broadcastPort,
+	})
+	if err != nil {
+		return
+	}
+
 	write, err := net.DialUDP("udp4", nil, &net.UDPAddr{
 		IP:   ip,
 		Port: broadcastPort,
@@ -120,16 +134,9 @@ func (conn *Connection) setupSockets() (err error) {
 		return
 	}
 
-	read, err := net.ListenMulticastUDP("udp4", nil, &net.UDPAddr{
-		IP:   ip,
-		Port: broadcastPort,
-	})
-	if err != nil {
-		return
-	}
-
+	conn.sockets.peer = peer
+	conn.sockets.broadcast = broadcast
 	conn.sockets.write = write
-	conn.sockets.read = read
 
 	return
 }
@@ -150,7 +157,7 @@ func Connect() (*Connection, error) {
 			b := make([]byte, defaultReadSize)
 
 			for {
-				n, addr, err := conn.sockets.read.ReadFrom(b)
+				n, addr, err := conn.sockets.broadcast.ReadFrom(b)
 				conn.lastErr = err
 
 				if conn.IsError() {
