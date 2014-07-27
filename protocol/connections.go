@@ -66,11 +66,10 @@ func (conn *Connection) Listen() (<-chan Message, <-chan error) {
 func (conn *Connection) WriteMessage(msg Message) (length int, err error) {
 	header := Header{
 		Version:     1024,
-		Target:      [8]byte{0xd0, 0x73, 0xd5, 0x00, 0x49, 0x14, 0x00, 0x00},
 		Site:        [6]byte{0x4c, 0x49, 0x46, 0x58, 0x56, 0x32},
 		AtTime:      0,
-		Addressable: false,
-		Tagged:      false,
+		Addressable: true,
+		Tagged:      true,
 		Acknowledge: false,
 	}
 
