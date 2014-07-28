@@ -145,6 +145,23 @@ func (conn *Connection) setupSockets() (err error) {
 //
 // The connection channel will be closed on a socket error. The error can be retrieved
 // with the LastError() method on the connection.
+
+func (conn *Connection) Read(socket *net.UDPConn) {
+	b := make([]byte, defaultReadSize)
+
+	for {
+		n, addr, err := socket.ReadFrom(b)
+		conn.lastErr = err
+
+		if conn.IsError() {
+			close(conn.Datagrams)
+			break
+		}
+
+		conn.Datagrams <- Datagram{addr, b[0:n]}
+	}
+}
+
 func Connect() (*Connection, error) {
 	conn := &Connection{
 		Datagrams: make(chan Datagram),
@@ -152,21 +169,8 @@ func Connect() (*Connection, error) {
 
 	err := conn.setupSockets()
 	if err == nil {
-		go func() {
-			b := make([]byte, defaultReadSize)
-
-			for {
-				n, addr, err := conn.sockets.broadcast.ReadFrom(b)
-				conn.lastErr = err
-
-				if conn.IsError() {
-					close(conn.Datagrams)
-					break
-				}
-
-				conn.Datagrams <- Datagram{addr, b[0:n]}
-			}
-		}()
+		go conn.Read(conn.sockets.broadcast)
+		go conn.Read(conn.sockets.peer)
 	}
 
 	runtime.SetFinalizer(conn, func(c *Connection) {
