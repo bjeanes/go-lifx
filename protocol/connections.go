@@ -7,7 +7,7 @@ import (
 
 const (
 	broadcastPort   = 56700
-	peerPort        = 56750 // not yet used
+	peerPort        = 56750
 	defaultReadSize = 128
 )
 
@@ -16,7 +16,7 @@ type Connection struct {
 	connected bool
 	lastErr   error
 	sockets   struct {
-		read, write *net.UDPConn
+		broadcast, peer, write *net.UDPConn
 	}
 }
 
@@ -42,11 +42,11 @@ func (conn Connection) Close() (err error) {
 		return
 	}
 
-	err = conn.sockets.read.Close()
+	err = conn.sockets.broadcast.Close()
 	if err != nil {
 		return
 	}
-	err = conn.sockets.write.Close()
+	err = conn.sockets.peer.Close()
 	if err != nil {
 		return
 	}
@@ -55,6 +55,39 @@ func (conn Connection) Close() (err error) {
 
 	conn.connected = false
 	return
+}
+
+func (conn *Connection) Listen() (<-chan Message, <-chan error) {
+	conn.Datagrams = make(chan Datagram)
+	msgs, errs := NewMessageDecoder(conn.Datagrams)
+	return msgs, errs
+}
+
+func (conn *Connection) WriteMessage(msg Message) (length int, err error) {
+	header := Header{
+		Version:     1024,
+		Site:        [6]byte{0x4c, 0x49, 0x46, 0x58, 0x56, 0x32},
+		AtTime:      0,
+		Addressable: true,
+		Tagged:      true,
+		Acknowledge: false,
+	}
+
+	msg.Header = &header
+
+	data, err := msg.MarshalBinary()
+	if err != nil {
+		return 0, err
+	}
+	length, err = conn.write(data)
+	if err != nil {
+		return 0, err
+	}
+	return length, err
+}
+
+func (conn *Connection) write(data []byte) (length int, err error) {
+	return conn.sockets.write.Write(data)
 }
 
 func (conn *Connection) setupSockets() (err error) {
@@ -76,8 +109,22 @@ func (conn *Connection) setupSockets() (err error) {
 	// [3]: http://en.wikipedia.org/wiki/Multicast_address#Local_subnetwork
 	ip := net.IPv4(224, 0, 0, 1)
 
-	// We may be able to write directly to the below multicast socket anyway, in which
-	// case this may not be needed. Not tested yet.
+	peer, err := net.ListenMulticastUDP("udp4", nil, &net.UDPAddr{
+		IP:   ip,
+		Port: peerPort,
+	})
+	if err != nil {
+		return
+	}
+
+	broadcast, err := net.ListenMulticastUDP("udp4", nil, &net.UDPAddr{
+		IP:   ip,
+		Port: broadcastPort,
+	})
+	if err != nil {
+		return
+	}
+
 	write, err := net.DialUDP("udp4", nil, &net.UDPAddr{
 		IP:   ip,
 		Port: broadcastPort,
@@ -86,16 +133,9 @@ func (conn *Connection) setupSockets() (err error) {
 		return
 	}
 
-	read, err := net.ListenMulticastUDP("udp4", nil, &net.UDPAddr{
-		IP:   ip,
-		Port: broadcastPort,
-	})
-	if err != nil {
-		return
-	}
-
+	conn.sockets.peer = peer
+	conn.sockets.broadcast = broadcast
 	conn.sockets.write = write
-	conn.sockets.read = read
 
 	return
 }
@@ -105,6 +145,23 @@ func (conn *Connection) setupSockets() (err error) {
 //
 // The connection channel will be closed on a socket error. The error can be retrieved
 // with the LastError() method on the connection.
+
+func (conn *Connection) Read(socket *net.UDPConn) {
+	b := make([]byte, defaultReadSize)
+
+	for {
+		n, addr, err := socket.ReadFrom(b)
+		conn.lastErr = err
+
+		if conn.IsError() {
+			close(conn.Datagrams)
+			break
+		}
+
+		conn.Datagrams <- Datagram{addr, b[0:n]}
+	}
+}
+
 func Connect() (*Connection, error) {
 	conn := &Connection{
 		Datagrams: make(chan Datagram),
@@ -112,21 +169,8 @@ func Connect() (*Connection, error) {
 
 	err := conn.setupSockets()
 	if err == nil {
-		go func() {
-			b := make([]byte, defaultReadSize)
-
-			for {
-				n, addr, err := conn.sockets.read.ReadFrom(b)
-				conn.lastErr = err
-
-				if conn.IsError() {
-					close(conn.Datagrams)
-					break
-				}
-
-				conn.Datagrams <- Datagram{addr, b[0:n]}
-			}
-		}()
+		go conn.Read(conn.sockets.broadcast)
+		go conn.Read(conn.sockets.peer)
 	}
 
 	runtime.SetFinalizer(conn, func(c *Connection) {

@@ -1,6 +1,9 @@
 package protocol
 
 import (
+	"bytes"
+	"encoding/hex"
+	"fmt"
 	"github.com/bjeanes/go-lifx/protocol/payloads"
 	. "testing"
 )
@@ -27,15 +30,15 @@ func TestDecodeDeviceGetPanGateway(t *T) {
 		t.Error("Decode failed with err: " + err.Error())
 	}
 
-	if msg.atTime != 0 {
+	if msg.AtTime != 0 {
 		t.Error("atTime field incorrect")
 	}
 
-	if msg.version != 1024 {
+	if msg.Version != 1024 {
 		t.Error("protocol version field incorrect")
 	}
 
-	if !msg.addressable {
+	if !msg.Addressable {
 		t.Error("adressable field should be true")
 	}
 }
@@ -62,25 +65,25 @@ func TestDecodeDeviceStatePanGatewayService1(t *T) {
 		t.Error("Decode failed with err: " + err.Error())
 	}
 
-	if msg.atTime != 0 {
+	if msg.AtTime != 0 {
 		t.Error("atTime field incorrect")
 	}
 
-	if msg.version != 1024 {
+	if msg.Version != 1024 {
 		t.Error("protocol version field incorrect")
 	}
 
-	if !msg.addressable {
+	if !msg.Addressable {
 		t.Error("adressable field should be true")
 	}
 
 	expectedTargetID := [8]byte{0xd0, 0x73, 0xd5, 0x00, 0xf9, 0x14, 0x00, 0x00}
-	if msg.Header.target != expectedTargetID {
+	if msg.Header.Target != expectedTargetID {
 		t.Error("Target incorrect")
 	}
 
 	expectedSiteID := [6]byte{0x4c, 0x49, 0x46, 0x58, 0x56, 0x32}
-	if msg.Header.site != expectedSiteID {
+	if msg.Header.Site != expectedSiteID {
 		t.Error("Site incorrect")
 	}
 
@@ -119,25 +122,25 @@ func TestDecodeDeviceStatePanGatewayService2(t *T) {
 		t.Error("Decode failed with err: " + err.Error())
 	}
 
-	if msg.atTime != 0 {
+	if msg.AtTime != 0 {
 		t.Error("atTime field incorrect")
 	}
 
-	if msg.version != 1024 {
+	if msg.Version != 1024 {
 		t.Error("protocol version field incorrect")
 	}
 
-	if !msg.addressable {
+	if !msg.Addressable {
 		t.Error("adressable field should be true")
 	}
 
 	expectedTargetID := [8]byte{0xd0, 0x73, 0xd5, 0x00, 0xf9, 0x14, 0x00, 0x00}
-	if msg.Header.target != expectedTargetID {
+	if msg.Header.Target != expectedTargetID {
 		t.Error("Target incorrect")
 	}
 
 	expectedSiteID := [6]byte{0x4c, 0x49, 0x46, 0x58, 0x56, 0x32}
-	if msg.Header.site != expectedSiteID {
+	if msg.Header.Site != expectedSiteID {
 		t.Error("Site incorrect")
 	}
 
@@ -188,25 +191,25 @@ func TestDecodeLightState(t *T) {
 		t.Error("Decode failed with err: " + err.Error())
 	}
 
-	if msg.atTime != 0 {
+	if msg.AtTime != 0 {
 		t.Error("atTime field incorrect")
 	}
 
-	if msg.version != 1024 {
+	if msg.Version != 1024 {
 		t.Error("protocol version field incorrect")
 	}
 
-	if !msg.addressable {
+	if !msg.Addressable {
 		t.Error("adressable field should be true")
 	}
 
 	expectedTargetID := [8]byte{0xd0, 0x73, 0xd5, 0x00, 0xf9, 0x14, 0x00, 0x00}
-	if msg.Header.target != expectedTargetID {
+	if msg.Header.Target != expectedTargetID {
 		t.Error("Target incorrect")
 	}
 
 	expectedSiteID := [6]byte{0x4c, 0x49, 0x46, 0x58, 0x56, 0x32}
-	if msg.Header.site != expectedSiteID {
+	if msg.Header.Site != expectedSiteID {
 		t.Error("Site incorrect")
 	}
 
@@ -249,14 +252,14 @@ func TestDecodeLightState(t *T) {
 
 func TestDeviceSetPowerOn(t *T) {
 	// DATA: length=38
-	//       000  26 00 00 54 00 00 00 00  d0 73 d5 00 f9 14 00 00  |&..T.....s......|
+	//       000  26 00 00 34 00 00 00 00  00 00 00 00 00 00 00 00  |&..4............|
 	//       010  4c 49 46 58 56 32 00 00  00 00 00 00 00 00 00 00  |LIFXV2..........|
-	//       020  15 00 00 00 00 00                                 |......|
-	// MSG:  &{version:1024 target:[208 115 213 0 249 20 0 0] site:[76 73 70 88 86 50] atTime:0 addressable:true tagged:false acknowledge:false}
+	//       020  15 00 00 00 01 00                                 |......|
+	// MSG:  &{Version:1024 Target:[0 0 0 0 0 0 0 0] Site:[76 73 70 88 86 50] AtTime:0 Addressable:true Tagged:true Acknowledge:false}
 	//       *payloads.DeviceSetPower &{Level:1}
 
 	b := []byte{
-		0x26, 0x00, 0x00, 0x54, 0x00, 0x00, 0x00, 0x00,
+		0x26, 0x00, 0x00, 0x34, 0x00, 0x00, 0x00, 0x00,
 		0xd0, 0x73, 0xd5, 0x00, 0xf9, 0x14, 0x00, 0x00,
 
 		0x4c, 0x49, 0x46, 0x58, 0x56, 0x32, 0x00, 0x00,
@@ -333,25 +336,25 @@ func TestDecodeDeviceStatePower(t *T) {
 		t.Error("Decode failed with err: " + err.Error())
 	}
 
-	if msg.atTime != 0 {
+	if msg.AtTime != 0 {
 		t.Error("atTime field incorrect")
 	}
 
-	if msg.version != 1024 {
+	if msg.Version != 1024 {
 		t.Error("protocol version field incorrect")
 	}
 
-	if !msg.addressable {
+	if !msg.Addressable {
 		t.Error("adressable field should be true")
 	}
 
 	expectedTargetID := [8]byte{0xd0, 0x73, 0xd5, 0x00, 0xf9, 0x14, 0x00, 0x00}
-	if msg.Header.target != expectedTargetID {
+	if msg.Header.Target != expectedTargetID {
 		t.Error("Target incorrect")
 	}
 
 	expectedSiteID := [6]byte{0x4c, 0x49, 0x46, 0x58, 0x56, 0x32}
-	if msg.Header.site != expectedSiteID {
+	if msg.Header.Site != expectedSiteID {
 		t.Error("Site incorrect")
 	}
 
@@ -380,15 +383,168 @@ func TestDecodeDeviceStateTime(t *T) {
 		t.Error("Decode failed with err: " + err.Error())
 	}
 
-	if msg.atTime != 0 {
+	if msg.AtTime != 0 {
 		t.Error("atTime field incorrect")
 	}
 
-	if msg.version != 1024 {
+	if msg.Version != 1024 {
 		t.Error("protocol version field incorrect")
 	}
 
-	if !msg.addressable {
+	if !msg.Addressable {
 		t.Error("adressable field should be true")
+	}
+}
+
+func TestMarshalBinary(t *T) {
+	msg := Message{}
+	target := [8]byte{0xd0, 0x73, 0xd5, 0x00, 0x49, 0x14, 0x00, 0x00}
+	site := [6]byte{0x4c, 0x49, 0x46, 0x58, 0x56, 0x32}
+	header := Header{
+		Version: 1024,
+
+		Target:      target,
+		Site:        site,
+		AtTime:      0,
+		Addressable: false,
+		Tagged:      false,
+		Acknowledge: false,
+	}
+	msg.Header = &header
+	msg.Payload = payloads.DeviceGetPanGateway{}
+
+	data, err := msg.MarshalBinary()
+	if err != nil {
+		t.Error(err)
+	}
+
+	// t.Log("\n" + hex.Dump(data))
+	// It should be this:
+	// DATA: length=36
+	// 00000000  24 00 00 04 00 00 00 00  d0 73 d5 00 49 14 00 00  |$........s..I...|
+	// 00000010  4c 49 46 58 56 32 00 00  00 00 00 00 00 00 00 00  |LIFXV2..........|
+	// 00000020  02 00 00 00                                       |....|
+
+	if !bytes.Equal(data[0:2], []byte{0x24, 0x00}) {
+		t.Error("Size incorrect")
+	}
+
+	if !bytes.Equal(data[3:4], []byte{0x04}) {
+		t.Error("Incorrect bitfield combo of version, addressable and tagged.")
+		t.Error(fmt.Sprintf("Expected 0x04, but got 0x%s", hex.EncodeToString(data[3:4])))
+	}
+
+	if !bytes.Equal(data[8:16], target[0:8]) {
+		t.Error("Target incorrect")
+	}
+
+	if !bytes.Equal(data[16:22], site[0:6]) {
+		t.Error("Site incorrect")
+	}
+
+	if !bytes.Equal(data[32:34], []byte{0x02, 0x00}) {
+		t.Error("Message type incorrect")
+	}
+}
+
+func TestTaggedMarshalBinary(t *T) {
+	msg := Message{}
+	target := [8]byte{0xd0, 0x73, 0xd5, 0x00, 0x49, 0x14, 0x00, 0x00}
+	site := [6]byte{0x4c, 0x49, 0x46, 0x58, 0x56, 0x32}
+	header := Header{
+		Version: 1024,
+
+		Target:      target,
+		Site:        site,
+		AtTime:      0,
+		Addressable: false,
+		Tagged:      true,
+		Acknowledge: false,
+	}
+	msg.Header = &header
+	msg.Payload = payloads.DeviceGetPanGateway{}
+
+	data, err := msg.MarshalBinary()
+	if err != nil {
+		t.Error(err)
+	}
+
+	// t.Log("\n" + hex.Dump(data))
+	// It should be this:
+	// DATA: length=36
+	// 00000000  24 00 00 24 00 00 00 00  d0 73 d5 00 49 14 00 00  |$........s..I...|
+	// 00000010  4c 49 46 58 56 32 00 00  00 00 00 00 00 00 00 00  |LIFXV2..........|
+	// 00000020  02 00 00 00                                       |....|
+
+	if !bytes.Equal(data[0:2], []byte{0x24, 0x00}) {
+		t.Error("Size incorrect")
+	}
+
+	if !bytes.Equal(data[3:4], []byte{0x24}) {
+		t.Error("Incorrect bitfield combo of version, addressable and tagged.")
+		t.Error(fmt.Sprintf("Expected 0x24, but got 0x%s", hex.EncodeToString(data[3:4])))
+	}
+
+	if !bytes.Equal(data[8:16], target[0:8]) {
+		t.Error("Target incorrect")
+	}
+
+	if !bytes.Equal(data[16:22], site[0:6]) {
+		t.Error("Site incorrect")
+	}
+
+	if !bytes.Equal(data[32:34], []byte{0x02, 0x00}) {
+		t.Error("Message type incorrect")
+	}
+}
+
+func TestDeviceSetPowerOnMarshalBinary(t *T) {
+	msg := Message{}
+	target := [8]byte{0xd0, 0x73, 0xd5, 0x00, 0x49, 0x14, 0x00, 0x00}
+	site := [6]byte{0x4c, 0x49, 0x46, 0x58, 0x56, 0x32}
+	header := Header{
+		Version: 1024,
+
+		Target:      target,
+		Site:        site,
+		AtTime:      0,
+		Addressable: true,
+		Tagged:      true,
+		Acknowledge: false,
+	}
+	msg.Header = &header
+	msg.Payload = payloads.DeviceSetPower{Level: 1}
+
+	data, err := msg.MarshalBinary()
+	if err != nil {
+		t.Error(err)
+	}
+
+	t.Log("\n" + hex.Dump(data))
+	// It should be this:
+	// DATA: length=38
+	//       000  26 00 00 34 00 00 00 00  00 00 00 00 00 00 00 00  |&..4............|
+	//       010  4c 49 46 58 56 32 00 00  00 00 00 00 00 00 00 00  |LIFXV2..........|
+	//       020  15 00 00 00 01 00                                 |......|
+
+	if !bytes.Equal(data[0:2], []byte{0x26, 0x00}) {
+		t.Error("Size incorrect")
+	}
+
+	if !bytes.Equal(data[3:4], []byte{0x34}) {
+		t.Error("Incorrect bitfield combo of version, addressable and tagged.")
+		t.Error(fmt.Sprintf("Expected 0x34, but got 0x%s", hex.EncodeToString(data[3:4])))
+	}
+
+	if !bytes.Equal(data[8:16], target[0:8]) {
+		t.Error("Target incorrect")
+	}
+
+	if !bytes.Equal(data[16:22], site[0:6]) {
+		t.Error("Site incorrect")
+	}
+
+	if !bytes.Equal(data[32:34], []byte{0x15, 0x00}) {
+		t.Error("Message type incorrect")
 	}
 }

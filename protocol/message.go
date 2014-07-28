@@ -10,14 +10,15 @@ import (
 )
 
 const compatibleVersion = 1024
+const headerSize = 36
 
-type message struct {
+type Message struct {
 	*Header
 	payloads.Payload
 }
 
 // http://golang.org/pkg/encoding/#BinaryUnmarshaler
-func (msg *message) UnmarshalBinary(data []byte) error {
+func (msg *Message) UnmarshalBinary(data []byte) error {
 	reader := bytes.NewReader(data)
 	msgHeader := header{}
 	err := binary.Read(reader, binary.LittleEndian, &msgHeader)
@@ -55,13 +56,29 @@ func (msg *message) UnmarshalBinary(data []byte) error {
 }
 
 // http://golang.org/pkg/encoding/#BinaryMarshaler
-func (m *message) MarshalBinary() (data []byte, err error) {
-	// TODO
-	return
+func (m *Message) MarshalBinary() ([]byte, error) {
+	buf := bytes.NewBuffer([]byte{})
+	err := binary.Write(buf, binary.LittleEndian, m.Payload)
+	if err != nil {
+		return []byte{}, err
+	}
+	payloadBytes := buf.Bytes()
+
+	raw := m.Header.ToRawHeader()
+	raw.Size = headerSize + uint16(len(payloadBytes))
+	raw.Type = m.Payload.Id()
+	buf.Truncate(0)
+	err = binary.Write(buf, binary.LittleEndian, raw)
+
+	if err != nil {
+		return []byte{}, err
+	}
+
+	return append(buf.Bytes(), payloadBytes...), nil
 }
 
-func Decode(b []byte) (message, error) {
-	msg := new(message)
+func Decode(b []byte) (Message, error) {
+	msg := new(Message)
 	err := msg.UnmarshalBinary(b)
 	return *msg, err
 }
@@ -75,8 +92,8 @@ func (e BadDatagram) Error() string {
 	return e.err.Error()
 }
 
-func NewMessageDecoder(datagrams <-chan Datagram) (<-chan message, <-chan error) {
-	msgs := make(chan message, 1)
+func NewMessageDecoder(datagrams <-chan Datagram) (<-chan Message, <-chan error) {
+	msgs := make(chan Message, 1)
 	errs := make(chan error, 1)
 
 	go func() {
