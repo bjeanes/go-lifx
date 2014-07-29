@@ -56,8 +56,6 @@ func (c *client) Discover() <-chan *light {
 				case *payloads.DeviceStatePanGateway:
 					// TODO: record gateway devices
 				case *payloads.LightState:
-					// If we find a bulb, let's extend the timeout another second:
-					timeout = time.After(1 * time.Second)
 					ch <- c.Lights.Register(payload)
 				default:
 					// nada
