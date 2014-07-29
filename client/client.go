@@ -1,7 +1,6 @@
 package client
 
 import (
-	"fmt"
 	proto "github.com/bjeanes/go-lifx/protocol"
 	payloads "github.com/bjeanes/go-lifx/protocol/payloads"
 	"time"
@@ -39,28 +38,33 @@ func (c *client) SendMessage(payload payloads.Payload) (data []byte, error error
 	return data, nil
 }
 
-func (c *client) Discover() {
-	c.SendMessage(payloads.LightGet{})
-
-	ticker := time.NewTicker(time.Second)
+func (c *client) Discover() <-chan *light {
+	ch := make(chan *light)
 
 	go func() {
-		for _ = range ticker.C {
+		timeout := time.After(5 * time.Second)
+		tick := time.Tick(400 * time.Millisecond)
+
+		for {
 			select {
+			case <-timeout:
+				close(ch)
+			case <-tick:
+				c.SendMessage(payloads.LightGet{})
 			case msg := <-c.Messages:
 				switch payload := msg.Payload.(type) {
 				case *payloads.DeviceStatePanGateway:
 					// TODO: record gateway devices
 				case *payloads.LightState:
-					fmt.Printf("Discovered bulb %s\n", payload.Label)
-					c.Lights.Register(payload)
+					// If we find a bulb, let's extend the timeout another second:
+					timeout = time.After(1 * time.Second)
+					ch <- c.Lights.Register(payload)
 				default:
-					fmt.Printf("I heard something, and it was a %T\n", payload)
+					// nada
 				}
 			}
 		}
 	}()
 
-	time.Sleep(10 * time.Second)
-	ticker.Stop()
+	return ch
 }

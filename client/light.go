@@ -9,10 +9,11 @@ type lightCollection struct {
 	lights []light
 }
 
-func (lc *lightCollection) Register(state *payloads.LightState) {
+func (lc *lightCollection) Register(state *payloads.LightState) *light {
 	light := light{client: lc.client}
 	light.UpdateFromState(state)
 	lc.lights = append(lc.lights, light)
+	return &light
 }
 
 func (lc *lightCollection) Count() int {

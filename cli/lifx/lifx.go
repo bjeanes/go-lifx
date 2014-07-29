@@ -28,9 +28,8 @@ func main() {
 			Usage: "List all discovered bulbs",
 			Action: func(_ *cli.Context) {
 				client := client.New()
-				client.Discover()
 				fmt.Println("Discovered bulbs:")
-				for _, light := range client.Lights.All() {
+				for light := range client.Discover() {
 					fmt.Println("  " + light.Label())
 				}
 			},
