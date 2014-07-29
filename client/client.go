@@ -49,7 +49,7 @@ func (c *client) Discover() {
 			case msg := <-c.Messages:
 				switch msg.Payload.(type) {
 				case *payloads.DeviceStatePanGateway:
-					c.Lights = append(c.Lights, light{client: *c})
+					c.Lights = append(c.Lights, light{client: c})
 				default:
 					fmt.Println(fmt.Sprintf("I heard something, and it was a %T", msg.Payload))
 				}

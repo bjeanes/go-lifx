@@ -5,7 +5,7 @@ import (
 )
 
 type light struct {
-	client
+	*client
 }
 
 func (l light) TurnOff() {
