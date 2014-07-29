@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"github.com/bjeanes/go-lifx"
+	"github.com/bjeanes/go-lifx/client"
 	"github.com/codegangsta/cli"
 	"os"
 )
@@ -22,9 +24,16 @@ func main() {
 
 	app.Commands = []cli.Command{
 		{
-			Name:   "list",
-			Usage:  "List all discovered bulbs",
-			Action: func(_ *cli.Context) {},
+			Name:  "list",
+			Usage: "List all discovered bulbs",
+			Action: func(_ *cli.Context) {
+				client := client.New()
+				client.Discover()
+				fmt.Println("Discovered bulbs:")
+				for _, light := range client.Lights.All() {
+					fmt.Println("  " + light.Label())
+				}
+			},
 		},
 		{
 			Name:   "on",
