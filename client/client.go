@@ -12,7 +12,7 @@ type client struct {
 	connection *proto.Connection
 	Messages   <-chan proto.Message
 	Errors     <-chan error
-	Lights     []light
+	Lights     *lightCollection
 }
 
 func New() *client {
@@ -26,6 +26,7 @@ func New() *client {
 
 	c.Messages = messages
 	c.Errors = errors
+	c.Lights = &lightCollection{client: c}
 
 	return c
 }
@@ -39,7 +40,7 @@ func (c *client) SendMessage(payload payloads.Payload) (data []byte, error error
 }
 
 func (c *client) Discover() {
-	c.SendMessage(payloads.DeviceGetPanGateway{})
+	c.SendMessage(payloads.LightGet{})
 
 	ticker := time.NewTicker(time.Second)
 
@@ -47,19 +48,19 @@ func (c *client) Discover() {
 		for _ = range ticker.C {
 			select {
 			case msg := <-c.Messages:
-				switch msg.Payload.(type) {
+				switch payload := msg.Payload.(type) {
 				case *payloads.DeviceStatePanGateway:
-					c.Lights = append(c.Lights, light{client: c})
+					// TODO: record gateway devices
+				case *payloads.LightState:
+					fmt.Printf("Discovered bulb %s\n", payload.Label)
+					c.Lights.Register(payload)
 				default:
-					fmt.Println(fmt.Sprintf("I heard something, and it was a %T", msg.Payload))
+					fmt.Printf("I heard something, and it was a %T\n", payload)
 				}
 			}
 		}
 	}()
 
-	time.Sleep(time.Second * 5)
+	time.Sleep(10 * time.Second)
 	ticker.Stop()
-
-	fmt.Println(fmt.Sprintf("Found %d lights", len(c.Lights)))
-
 }

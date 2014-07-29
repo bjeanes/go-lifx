@@ -6,6 +6,13 @@ type Payload interface {
 	Id() uint16
 }
 
+type site [6]byte
+
+func (site site) String() string {
+	bytes := [6]byte(site)
+	return strings.Trim(string(bytes[:]), "\x00")
+}
+
 type label [32]byte
 
 func (label label) String() string {
@@ -27,7 +34,7 @@ type LightHsbk struct {
 }
 
 type DeviceSetSite struct {
-	Site [6]byte
+	Site site
 }
 
 type DeviceGetPanGateway struct{}
@@ -214,19 +221,19 @@ type WanStateConnect struct {
 
 type WanSub struct {
 	Target [8]byte
-	Site   [6]byte
+	Site   site
 	Device uint8 // 0 device; 1 tag
 }
 
 type WanUnsub struct {
 	Target [8]byte
-	Site   [6]byte
+	Site   site
 	Device uint8 // 0 device; 1 tag
 }
 
 type WanStateSub struct {
 	Target [8]byte
-	Site   [6]byte
+	Site   site
 	Device uint8 // 0 device; 1 tag
 }
 
