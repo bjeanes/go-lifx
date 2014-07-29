@@ -43,14 +43,13 @@ func (c *client) Discover() <-chan *light {
 
 	go func() {
 		timeout := time.After(5 * time.Second)
-		tick := time.Tick(400 * time.Millisecond)
+
+		c.SendMessage(payloads.LightGet{})
 
 		for {
 			select {
 			case <-timeout:
 				close(ch)
-			case <-tick:
-				c.SendMessage(payloads.LightGet{})
 			case msg := <-c.Messages:
 				switch payload := msg.Payload.(type) {
 				case *payloads.DeviceStatePanGateway:
