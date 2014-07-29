@@ -15,29 +15,29 @@ func main() {
 		panic(err.Error())
 	}
 
-	datagrams := make(chan protocol.Datagram)
-	bytes := make(chan []byte)
+	snoopDatagrams := make(chan protocol.Datagram)
+	decoderDatagrams := make(chan protocol.Datagram)
 
 	go func() {
 		for d := range conn.Datagrams {
-			datagrams <- d
-			bytes <- d.Data
+			snoopDatagrams <- d
+			decoderDatagrams <- d
 		}
 
-		close(datagrams)
-		close(bytes)
+		close(snoopDatagrams)
+		close(decoderDatagrams)
 	}()
 
-	msgs, errs := protocol.NewMessageDecoder(datagrams)
+	msgs, errs := protocol.NewMessageDecoder(decoderDatagrams)
 
 	re := regexp.MustCompilePOSIX("^00000")
 
 	for {
-		b := <-bytes
+		d := <-snoopDatagrams
 
 		out := color.New(color.FgWhite)
-		out.Printf("DATA: length=%d\n", len(b))
-		out.Print(re.ReplaceAllString(hex.Dump(b), "      "))
+		out.Printf("DATA: length=%d\n", len(d.Data))
+		out.Print(re.ReplaceAllString(hex.Dump(d.Data), "      "))
 		color.Set(color.Bold)
 
 		select {
