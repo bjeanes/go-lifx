@@ -6,6 +6,7 @@ import (
 	"github.com/bjeanes/go-lifx/protocol"
 	"github.com/fatih/color"
 	"regexp"
+	"strings"
 )
 
 func main() {
@@ -36,8 +37,10 @@ func main() {
 		d := <-snoopDatagrams
 
 		out := color.New(color.FgWhite)
-		out.Printf("DATA: length=%d\n", len(d.Data))
-		out.Print(re.ReplaceAllString(hex.Dump(d.Data), "      "))
+		out.Printf("FROM: %s\n", d.From)
+		out.Printf("SIZE: %d\n", len(d.Data))
+		data := strings.TrimLeft(hex.Dump(d.Data), "0")
+		out.Printf("DATA: 000" + re.ReplaceAllString(data, "      "))
 		color.Set(color.Bold)
 
 		select {
