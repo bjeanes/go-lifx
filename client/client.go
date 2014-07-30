@@ -5,9 +5,14 @@ import (
 	"time"
 )
 
+type connection interface {
+	Listen() (<-chan proto.Message, <-chan error)
+	WriteMessage(proto.Message) error
+}
+
 type client struct {
 	connected  bool
-	connection *proto.Connection
+	connection connection
 	Messages   <-chan proto.Message
 	Errors     <-chan error
 	Lights     *lightCollection
