@@ -1,36 +1,7 @@
-package payloads
-
-import "strings"
+package protocol
 
 type Payload interface {
 	Id() uint16
-}
-
-type Site [6]byte
-
-func (site Site) String() string {
-	bytes := [6]byte(site)
-	return strings.Trim(string(bytes[:]), "\x00")
-}
-
-type label [32]byte
-
-func (label label) String() string {
-	bytes := [32]byte(label)
-	return strings.Trim(string(bytes[:]), "\x00")
-}
-
-type (
-	apSecurity uint8
-	ifaceType  uint8
-	wifiStatus uint8
-)
-
-type LightHsbk struct {
-	Hue        uint16 // 0-65535 scaled to 0-360°
-	Saturation uint16 // 0-65535 scaled to 0-100%
-	Brightness uint16 // 0-65535 scaled to 0-100%
-	Kelvin     uint16 // absolute 2400-10000
 }
 
 type DeviceSetSite struct {
@@ -158,14 +129,14 @@ type LightGet struct{}
 
 type LightSet struct {
 	Stream   uint8
-	Color    LightHsbk
+	Color    Hsbk
 	Duration uint32 // ms
 }
 
 type LightSetWaveform struct {
 	Stream    uint8
 	Transient uint8 // 0 false; 1+ true
-	Color     LightHsbk
+	Color     Hsbk
 	Period    uint32 // ms per cycle
 	DutyCycle int16
 	Waveform  uint8
@@ -188,7 +159,7 @@ type LightSetRgbw struct {
 }
 
 type LightState struct {
-	Color LightHsbk
+	Color Hsbk
 	Dim   int16
 	Power uint16
 	Label label

@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/hex"
 	"fmt"
-	"github.com/bjeanes/go-lifx/protocol/payloads"
 	. "testing"
 )
 
@@ -87,7 +86,7 @@ func TestDecodeDeviceStatePanGatewayService1(t *T) {
 		t.Error("Site incorrect")
 	}
 
-	payload := msg.Payload.(*payloads.DeviceStatePanGateway)
+	payload := msg.Payload.(*DeviceStatePanGateway)
 
 	if payload.Service != 1 {
 		t.Error("Service incorrect")
@@ -144,7 +143,7 @@ func TestDecodeDeviceStatePanGatewayService2(t *T) {
 		t.Error("Site incorrect")
 	}
 
-	payload := msg.Payload.(*payloads.DeviceStatePanGateway)
+	payload := msg.Payload.(*DeviceStatePanGateway)
 
 	if payload.Service != 2 {
 		t.Error("Service incorrect")
@@ -164,7 +163,7 @@ func TestDecodeLightState(t *T) {
 	//       040  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
 	//       050  01 00 00 00 00 00 00 00                           |........|
 	// MSG:  &{version:1024 target:[208 115 213 0 249 20 0 0] site:[76 73 70 88 86 50] atTime:0 addressable:true tagged:false acknowledge:false}
-	//       *payloads.LightState &{Color:{Hue:0 Saturation:0 Brightness:15994 Kelvin:2500} Dim:0 Power:0 Label:Bedroom Tags:1}
+	//       *protocol.LightState &{Color:{Hue:0 Saturation:0 Brightness:15994 Kelvin:2500} Dim:0 Power:0 Label:Bedroom Tags:1}
 
 	b := []byte{
 		0x58, 0x00, 0x00, 0x54, 0x00, 0x00, 0x00, 0x00,
@@ -213,8 +212,8 @@ func TestDecodeLightState(t *T) {
 		t.Error("Site incorrect")
 	}
 
-	payload := msg.Payload.(*payloads.LightState)
-	// *payloads.LightState &{Color:{Hue:0 Saturation:0 Brightness:15994 Kelvin:2500} Dim:0 Power:0 Label:Bedroom Tags:1}
+	payload := msg.Payload.(*LightState)
+	// *LightState &{Color:{Hue:0 Saturation:0 Brightness:15994 Kelvin:2500} Dim:0 Power:0 Label:Bedroom Tags:1}
 
 	if payload.Color.Hue != 0 {
 		t.Error("Hue incorrect")
@@ -256,7 +255,7 @@ func TestDeviceSetPowerOn(t *T) {
 	//       010  4c 49 46 58 56 32 00 00  00 00 00 00 00 00 00 00  |LIFXV2..........|
 	//       020  15 00 00 00 01 00                                 |......|
 	// MSG:  &{Version:1024 Target:[0 0 0 0 0 0 0 0] Site:[76 73 70 88 86 50] AtTime:0 Addressable:true Tagged:true Acknowledge:false}
-	//       *payloads.DeviceSetPower &{Level:1}
+	//       *protocol.DeviceSetPower &{Level:1}
 
 	b := []byte{
 		0x26, 0x00, 0x00, 0x34, 0x00, 0x00, 0x00, 0x00,
@@ -274,7 +273,7 @@ func TestDeviceSetPowerOn(t *T) {
 		t.Error("Decode failed with err: " + err.Error())
 	}
 
-	payload := msg.Payload.(*payloads.DeviceSetPower)
+	payload := msg.Payload.(*DeviceSetPower)
 
 	if payload.Level != 1 {
 		t.Error("Level incorrect")
@@ -287,7 +286,7 @@ func TestDeviceSetPowerOff(t *T) {
 	//       010  4c 49 46 58 56 32 00 00  00 00 00 00 00 00 00 00  |LIFXV2..........|
 	//       020  15 00 00 00 00 00                                 |......|
 	// MSG:  &{version:1024 target:[208 115 213 0 249 20 0 0] site:[76 73 70 88 86 50] atTime:0 addressable:true tagged:false acknowledge:false}
-	//       *payloads.DeviceSetPower &{Level:0}
+	//       *protocol.DeviceSetPower &{Level:0}
 
 	b := []byte{
 		0x26, 0x00, 0x00, 0x54, 0x00, 0x00, 0x00, 0x00,
@@ -305,7 +304,7 @@ func TestDeviceSetPowerOff(t *T) {
 		t.Error("Decode failed with err: " + err.Error())
 	}
 
-	payload := msg.Payload.(*payloads.DeviceSetPower)
+	payload := msg.Payload.(*DeviceSetPower)
 
 	if payload.Level != 0 {
 		t.Error("Level incorrect")
@@ -318,7 +317,7 @@ func TestDecodeDeviceStatePower(t *T) {
 	//       010  4c 49 46 58 56 32 00 00  00 00 00 00 00 00 00 00  |LIFXV2..........|
 	//       020  16 00 00 00 00 00                                 |......|
 	// MSG:  &{version:1024 target:[208 115 213 0 249 20 0 0] site:[76 73 70 88 86 50] atTime:0 addressable:true tagged:false acknowledge:false}
-	//       *payloads.DeviceStatePower &{Level:65535}
+	//       *protocol.DeviceStatePower &{Level:65535}
 
 	b := []byte{
 		0x26, 0x00, 0x00, 0x54, 0x00, 0x00, 0x00, 0x00,
@@ -358,7 +357,7 @@ func TestDecodeDeviceStatePower(t *T) {
 		t.Error("Site incorrect")
 	}
 
-	payload := msg.Payload.(*payloads.DeviceStatePower)
+	payload := msg.Payload.(*DeviceStatePower)
 
 	if payload.Level != 65535 {
 		t.Error("Power level incorrect")
@@ -411,7 +410,7 @@ func TestMarshalBinary(t *T) {
 		Acknowledge: false,
 	}
 	msg.Header = &header
-	msg.Payload = payloads.DeviceGetPanGateway{}
+	msg.Payload = DeviceGetPanGateway{}
 
 	data, err := msg.MarshalBinary()
 	if err != nil {
@@ -462,7 +461,7 @@ func TestTaggedMarshalBinary(t *T) {
 		Acknowledge: false,
 	}
 	msg.Header = &header
-	msg.Payload = payloads.DeviceGetPanGateway{}
+	msg.Payload = DeviceGetPanGateway{}
 
 	data, err := msg.MarshalBinary()
 	if err != nil {
@@ -513,7 +512,7 @@ func TestDeviceSetPowerOnMarshalBinary(t *T) {
 		Acknowledge: false,
 	}
 	msg.Header = &header
-	msg.Payload = payloads.DeviceSetPower{Level: 1}
+	msg.Payload = DeviceSetPower{Level: 1}
 
 	data, err := msg.MarshalBinary()
 	if err != nil {
