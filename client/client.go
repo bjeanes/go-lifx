@@ -16,22 +16,33 @@ type client struct {
 	Messages   <-chan proto.Message
 	Errors     <-chan error
 	Lights     *lightCollection
+	subs       subService
 }
 
 func New() *client {
 	c := &client{}
-	if conn, err := proto.Connect(); err == nil {
+	c.init(func() (connection, error) {
+		return proto.Connect()
+	})
+
+	return c
+}
+
+func (c *client) init(connector func() (connection, error)) {
+	if conn, err := connector(); err == nil {
 		c.connection = conn
 		c.connected = true
 	}
 
 	messages, errors := c.connection.Listen()
 
-	c.Messages = messages
-	c.Errors = errors
 	c.Lights = &lightCollection{client: c}
+	ss, sub := newSubService(messages)
 
-	return c
+	c.subs = ss
+
+	c.Messages = sub
+	c.Errors = errors
 }
 
 func (c *client) SendMessage(payload proto.Payload) (data []byte, error error) {
