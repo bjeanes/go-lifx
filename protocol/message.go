@@ -5,8 +5,6 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
-	"github.com/bjeanes/go-lifx/protocol/payloads"
-	// "strings"
 )
 
 const compatibleVersion = 1024
@@ -14,7 +12,7 @@ const headerSize = 36
 
 type Message struct {
 	*Header
-	payloads.Payload
+	Payload
 }
 
 // http://golang.org/pkg/encoding/#BinaryUnmarshaler
@@ -32,7 +30,7 @@ func (msg *Message) UnmarshalBinary(data []byte) error {
 		return errors.New(fmt.Sprintf("Unknown message version (%d)", v))
 	}
 
-	payload := payloads.ForId(msgHeader.Type)
+	payload := ForId(msgHeader.Type)
 	if payload != nil {
 		if reader.Len() != binary.Size(payload) {
 			return errors.New(fmt.Sprintf("Unexpected payload size for %T", payload))

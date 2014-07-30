@@ -1,4 +1,4 @@
-package payloads
+package protocol
 
 const (
 	DeviceSetSiteID             uint16 = 1

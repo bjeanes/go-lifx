@@ -2,7 +2,6 @@ package client
 
 import (
 	proto "github.com/bjeanes/go-lifx/protocol"
-	payloads "github.com/bjeanes/go-lifx/protocol/payloads"
 	"time"
 )
 
@@ -30,7 +29,7 @@ func New() *client {
 	return c
 }
 
-func (c *client) SendMessage(payload payloads.Payload) (data []byte, error error) {
+func (c *client) SendMessage(payload proto.Payload) (data []byte, error error) {
 	msg := proto.Message{}
 	msg.Payload = payload
 
@@ -44,7 +43,7 @@ func (c *client) Discover() <-chan *light {
 	go func() {
 		timeout := time.After(5 * time.Second)
 
-		c.SendMessage(payloads.LightGet{})
+		c.SendMessage(proto.LightGet{})
 
 		for {
 			select {
@@ -52,9 +51,9 @@ func (c *client) Discover() <-chan *light {
 				close(ch)
 			case msg := <-c.Messages:
 				switch payload := msg.Payload.(type) {
-				case *payloads.DeviceStatePanGateway:
+				case *proto.DeviceStatePanGateway:
 					// TODO: record gateway devices
-				case *payloads.LightState:
+				case *proto.LightState:
 					ch <- c.Lights.Register(payload)
 				default:
 					// nada

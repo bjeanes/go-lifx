@@ -1,7 +1,5 @@
 package protocol
 
-import "github.com/bjeanes/go-lifx/protocol/payloads"
-
 type (
 	bitfield uint16
 
@@ -16,7 +14,7 @@ type (
 
 		_      uint32 // <reserved>
 		Target [8]byte
-		Site   payloads.Site
+		Site   Site
 
 		// 1 bit = acknowledge bool
 		// 15 bits = <reserved>
@@ -31,7 +29,7 @@ type (
 	Header struct {
 		Version     uint16
 		Target      [8]byte
-		Site        payloads.Site
+		Site        Site
 		AtTime      uint64
 		Addressable bool
 		Tagged      bool

@@ -1,4 +1,4 @@
-package payloads
+package protocol
 
 const (
 	_ ifaceType = iota
