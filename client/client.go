@@ -37,12 +37,13 @@ func (c *client) init(connector func() (connection, error)) {
 	messages, errors := c.connection.Listen()
 
 	c.Lights = &lightCollection{client: c}
-	ss, sub := newSubService(messages)
-
-	c.subs = ss
-
-	c.Messages = sub
+	c.subs = newSubService(messages)
+	c.Messages = c.subs.Sub()
 	c.Errors = errors
+}
+
+func (c *client) Sub() <-chan proto.Message {
+	return c.subs.Sub()
 }
 
 func (c *client) SendMessage(payload proto.Payload) (data []byte, error error) {
