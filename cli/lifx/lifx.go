@@ -18,8 +18,8 @@ func main() {
 	}
 
 	app.Flags = []cli.Flag{
-		cli.StringFlag{"tag, t", "*", "Limit action to bulbs with specified tag"},
-		cli.StringFlag{"label, l", "*", "Limit action to bulb with specified label"},
+		cli.StringFlag{Name: "tag, t", Value: "*", Usage: "Limit action to bulbs with specified tag"},
+		cli.StringFlag{Name: "label, l", Value: "*", Usage: "Limit action to bulb with specified label"},
 	}
 
 	app.Commands = []cli.Command{
@@ -48,12 +48,12 @@ func main() {
 			Name:  "change",
 			Usage: "Change specified color attributes of light(s)",
 			Flags: []cli.Flag{
-				cli.Float64Flag{"hue, H", 0.85, "Hue (0.0-360.0)"},
-				cli.Float64Flag{"brightness, B", 0.85, "Brightness (0.0-1.0)"},
-				cli.Float64Flag{"saturation, S", 0.85, "Saturation (0.0-1.0)"},
-				cli.IntFlag{"kelvin, temp, K", 5000, "Temperature in °K (2500-10000)"},
-				cli.StringFlag{"color", "white", "Set to named color"},
-				cli.BoolFlag{"colors", "List available named colors"},
+				cli.Float64Flag{Name: "hue, H", Value: 0.85, Usage: "Hue (0.0-360.0)"},
+				cli.Float64Flag{Name: "brightness, B", Value: 0.85, Usage: "Brightness (0.0-1.0)"},
+				cli.Float64Flag{Name: "saturation, S", Value: 0.85, Usage: "Saturation (0.0-1.0)"},
+				cli.IntFlag{Name: "kelvin, temp, K", Value: 5000, Usage: "Temperature in °K (2500-10000)"},
+				cli.StringFlag{Name: "color", Value: "white", Usage: "Set to named color"},
+				cli.BoolFlag{Name: "colors", Usage: "List available named colors"},
 			},
 			Action: func(_ *cli.Context) {},
 		},
