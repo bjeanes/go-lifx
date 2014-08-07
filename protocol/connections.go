@@ -63,7 +63,7 @@ func (conn *Connection) Listen() (<-chan Message, <-chan error) {
 	return msgs, errs
 }
 
-func (conn *Connection) WriteMessage(msg Message) (length int, err error) {
+func (conn *Connection) WriteMessage(msg Message) (err error) {
 	header := Header{
 		Version:     1024,
 		Site:        [6]byte{0x4c, 0x49, 0x46, 0x58, 0x56, 0x32},
@@ -77,13 +77,13 @@ func (conn *Connection) WriteMessage(msg Message) (length int, err error) {
 
 	data, err := msg.MarshalBinary()
 	if err != nil {
-		return 0, err
+		return err
 	}
-	length, err = conn.write(data)
+	_, err = conn.write(data)
 	if err != nil {
-		return 0, err
+		return err
 	}
-	return length, err
+	return nil
 }
 
 func (conn *Connection) write(data []byte) (length int, err error) {
